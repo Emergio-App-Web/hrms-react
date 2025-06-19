@@ -1,0 +1,277 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import {Search} from 'lucide-react'
+
+export default function EmploymentForm() {
+  const [formData, setFormData] = useState({
+    employer: "",
+    jobTitle: "",
+    employeeCode: "",
+    tenureStart: "",
+    tenureEnd: "",
+    lastCtc: "",
+    reasonForLeaving: "",
+    document: null,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission
+    console.log(formData);
+  };
+
+  const data = [
+    {
+      employer: "Tech Corp",
+      jobTitle: "Software Engineer",
+      employeeCode: "EMP001",
+      tenure: "2 years",
+      lastCtc: "$80,000",
+      reasonForLeaving: "Career Growth",
+    },
+    // Add more records as needed
+  ];
+
+  return (
+    <div className="md:p-8 flex flex-col gap-10">
+      <Card className="relative w-full max-w-3xl mx-auto rounded-3xl bg-[#fbfff2] before:content-['Job_History_Details'] before:text-[#4F4F4F] before:font-semibold before:text-2xl before:absolute before:-top-14">
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-6 max-w-3xl mx-auto p-6 bg-[#fdfff2] rounded-lg text-[14px]">
+              {/* Employer */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
+                <label htmlFor="employer" className="font-medium">
+                  Employer
+                </label>
+                <input
+                  type="text"
+                  id="employer"
+                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.employer}
+                  onChange={(e) =>
+                    setFormData({ ...formData, employer: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Job Title */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
+                <label htmlFor="jobTitle" className="font-medium">
+                  Job Title
+                </label>
+                <input
+                  type="text"
+                  id="jobTitle"
+                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.jobTitle}
+                  onChange={(e) =>
+                    setFormData({ ...formData, jobTitle: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Employee Code */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
+                <label htmlFor="employeeCode" className="font-medium">
+                  Employee Code
+                </label>
+                <input
+                  type="text"
+                  id="employeeCode"
+                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.employeeCode}
+                  onChange={(e) =>
+                    setFormData({ ...formData, employeeCode: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Tenure */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] items-center gap-4">
+                <label className="font-medium">Tenure</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <input
+                    type="date"
+                    className="px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={formData.tenureStart}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tenureStart: e.target.value })
+                    }
+                  />
+                  <input
+                    type="date"
+                    className="px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={formData.tenureEnd}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tenureEnd: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Last CTC */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
+                <label htmlFor="lastCtc" className="font-medium">
+                  Last CTC
+                </label>
+                <input
+                  type="text"
+                  id="lastCtc"
+                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.lastCtc}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastCtc: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Reason For Leaving */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-start">
+                <label htmlFor="reasonForLeaving" className="font-medium pt-2">
+                  Reason For Leaving
+                </label>
+                <textarea
+                  id="reasonForLeaving"
+                  rows={4}
+                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData.reasonForLeaving}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      reasonForLeaving: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              {/* Upload Document */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
+                <label htmlFor="document" className="font-medium">
+                  Upload Document
+                </label>
+                <input
+                  type="file"
+                  id="document"
+                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+              </div>
+            </div>
+            <div className="flex   justify-center gap-10 items-center my-10 text-[14px]">
+              <button className="bg-black px-5 py-2 text-white rounded-3xl font-semibold">
+                Add Details
+              </button>
+              <button className="bg-[#DDFF8F] px-5 py-2 text-black rounded-3xl font-semibold">
+                Reset
+              </button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Table Section header */}
+
+      <div className="w-full max-w-7xl mx-auto md:p-4 ">
+        <div className=" rounded-b-lg bg-[#FBFFF2] pb-2">
+
+          {/* head */}
+          <div className="bg-[#e8ffa8] p-4 rounded-2xl  md:rounded-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
+            
+            {/* show */}
+            <div className="flex items-center gap-2">
+              <span className="font-bold">Show</span>
+              <select className="px-3 py-1 rounded-xl border border-gray-300 bg-white text-sm sm:text-base">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+              <span className="font-bold">Entries</span>
+            </div>
+            
+            {/* search */}
+            <div className="flex items-center gap-2">
+              <input
+                type="search"
+                placeholder="Search..."
+                className="px-4 py-2 rounded-xl border border-gray-300 min-w-[150px] sm:min-w-[250px] text-sm sm:text-base"
+              />
+              <button className="px-4 py-2 bg-[#e8ffa8] hidden sm:block rounded hover:bg-[#dff59e] font-bold text-sm sm:text-base">
+                Search
+              </button>
+              <Search className="sm:hidden"/>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto mt-4">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="px-6 py-3 text-left text-xs sm:text-sm">
+                    Employer
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs sm:text-sm">
+                    Job Title
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs sm:text-sm">
+                    Employee Code
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs sm:text-sm">
+                    Tenure
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs sm:text-sm hidden sm:table-cell">
+                    Last CTC
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs sm:text-sm hidden sm:table-cell">
+                    Reason For Leaving
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs sm:text-sm">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((record, index) => (
+                  <tr key={index} className="border-b hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm sm:text-base">
+                      {record.employer}
+                    </td>
+                    <td className="px-6 py-4 text-sm sm:text-base">
+                      {record.jobTitle}
+                    </td>
+                    <td className="px-6 py-4 text-sm sm:text-base">
+                      {record.employeeCode}
+                    </td>
+                    <td className="px-6 py-4 text-sm sm:text-base">
+                      {record.tenure}
+                    </td>
+                    <td className="px-6 py-4 text-sm sm:text-base hidden sm:table-cell">
+                      {record.lastCtc}
+                    </td>
+                    <td className="px-6 py-4 text-sm sm:text-base hidden sm:table-cell">
+                      {record.reasonForLeaving}
+                    </td>
+                    <td className="px-6 py-4">
+                      <button className="text-blue-600 hover:text-blue-800 text-sm sm:text-base">
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="w-full flex justify-end gap-5 mt-4  font-montserrat font-bold text-[10px] sm:text-xs ">
+            <button className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-700">
+              Previous
+            </button>
+            <button className="px-4 py-2 bg-[#e8ffa8] rounded-full hover:bg-[#dff59e] mr-2">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

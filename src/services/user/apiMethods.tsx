@@ -1,0 +1,18 @@
+import { apiCall } from "./apiCalls";
+import {  userUrls } from "../endPoints"
+
+export const postLogin = (userData:any) => {
+  return new Promise((resolve, reject) => {
+    try {
+        apiCall("post", userUrls.login, userData)
+        .then((response) => {
+            resolve(response)
+        })
+        .catch((err) => {
+            reject(err)
+        })
+    } catch(error){
+        resolve({ status: 500, message: "Something went wrong"})
+    }
+  })    
+}
