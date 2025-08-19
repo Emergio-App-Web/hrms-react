@@ -20,21 +20,17 @@ import {
   Grid,
   ChevronDown,
   Wallet,
-  ChevronsRight,
-  UserPlus
+  ChevronsRight
 } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { useSelector } from "react-redux"
 
-export function Sidebar() {
+export function EmployeeSidebar() {
   const location = useLocation()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const sidebarRef = useRef<HTMLDivElement>(null)
-
-  const role = useSelector((state: { auth: { user: string | null } }) => state.auth.user)
 
   const toggleDropdown = (name: string) => {
     setOpenDropdown(openDropdown === name ? null : name)
@@ -83,8 +79,6 @@ export function Sidebar() {
 
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-
-  
 
   return (
     <>
@@ -155,8 +149,7 @@ export function Sidebar() {
           </Button>
         </div>
 
-        <nav className="flex flex-1 flex-col gap-2 "
-        >
+        <nav className="flex flex-1 flex-col gap-2 ">
           <NavItem
             icon={LayoutDashboard}
             title="Dashboard"
@@ -168,17 +161,17 @@ export function Sidebar() {
           <NavItem
             icon={Home}
             title="Home"
-            to="/home"
+            to="/home/profile"
             isCollapsed={isCollapsed}
-            isActive={location.pathname === '/home'}
+            isActive={location.pathname.startsWith('/home/')}
           />
 
           <NavItem
             icon={Heart}
             title="Attendance"
-            to="/attendance"
+            to="/attendance/summary"
             isCollapsed={isCollapsed}
-            isActive={location.pathname === '/attendance'}
+            isActive={location.pathname === '/attendance/summary'}
           />
 
           <DropdownNavItem
@@ -304,17 +297,6 @@ export function Sidebar() {
             isActive={location.pathname === '/settings'}
           />
 
-          {
-            role === 'admin' && (
-              <NavItem
-                icon={UserPlus}
-                title="Employee"
-                to="/employee"
-                isCollapsed={isCollapsed}
-              />
-            )
-          }
-
           <NavItem
             icon={LogOut}
             title="Logout"
@@ -336,10 +318,7 @@ interface NavItemProps {
   isActive?: boolean
 }
 
-function NavItem({ icon: Icon, title, to, isCollapsed }: NavItemProps) {
-  // const location = useLocation();
-
-  const isActive =  location.pathname.startsWith(to)
+function NavItem({ icon: Icon, title, to, isCollapsed, isActive }: NavItemProps) {
   return (
     <Button
       variant="nav"
@@ -351,9 +330,9 @@ function NavItem({ icon: Icon, title, to, isCollapsed }: NavItemProps) {
         "before:transition-all before:duration-300",
         "hover:before:opacity-100 hover:before:bg-[#ddff8f]/50",
         isCollapsed && "justify-center",
-        isActive ?
-          "bg-[#ddff8f] before:bg-[#ddff8f] before:opacity-100 text-black hover:before:opacity-100" :
-          "hover:bg-[#cdf966] hover:text-black"
+        isActive
+          ? "bg-[#ddff8f] before:bg-[#ddff8f] before:opacity-100 text-black hover:before:opacity-100"
+          : "hover:bg-[#cdf966] hover:text-black"
       )}
     >
       <Link to={to}>
@@ -363,6 +342,7 @@ function NavItem({ icon: Icon, title, to, isCollapsed }: NavItemProps) {
     </Button>
   )
 }
+
 
 interface DropdownNavItemProps {
   icon: React.ElementType
@@ -450,6 +430,5 @@ function DropdownNavItem({
   )
 }
 
-export default Sidebar;
+export default EmployeeSidebar;
 // import * as React from "react"
-

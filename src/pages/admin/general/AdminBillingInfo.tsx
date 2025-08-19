@@ -53,7 +53,7 @@ const AdminBillingInfo = () => {
                     setValue("pan", response.data.pan);
                     setValue("country", response.data.country);
                 }
-                console.log("get billing data :", response);
+                // console.log("get billing data :", response);
             })
             .catch((error) => {
                 console.error("Error occurred :", error);
@@ -61,10 +61,10 @@ const AdminBillingInfo = () => {
     }, []);
 
     const onSubmit: SubmitHandler<BillingData> = async (data) => {
-        console.log("submit billing data :", data);
+        // console.log("submit billing data :", data);
         try {
-            const responseBillData = await addBilling(data);
-            console.log("response bill data upon edit:", responseBillData);
+            await addBilling(data);
+            // console.log("response bill data upon edit:");
         } catch (error) {
             console.error("Error while editing billing:", error);
         }

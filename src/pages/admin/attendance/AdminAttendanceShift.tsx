@@ -1,11 +1,19 @@
-import { getShift, postShift } from "@/services/admin/apiMethods";
-// updateShift
-import { useEffect } from "react";
+import { getShift, postShift, updateShift } from "@/services/admin/apiMethods";
+import { PenSquare } from "lucide-react";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Toggle } from "@/components/ui/toggle";
+import { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 const AdminAttendanceShift = () => {
-    interface ShiftData {
-        organization: number;
+    interface OrganizationType {
+        id: number;
+        name: string;
+    }
+
+    interface ShiftTypes {
+        id: number;
+        organization: OrganizationType;
         shift_type: string;
         shift_code: string;
         shift_title: string;
@@ -15,31 +23,22 @@ const AdminAttendanceShift = () => {
         make_default_shift: boolean;
     }
 
-    useEffect(() => {
-        getShift().then((response: any) => {
-            const status = response.status
-            if(status === 200){
-                const data = response.data
-                Object.keys(data).forEach((key) => {
-                    if(typeof data[key] === "object"){
-                        Object.keys(data[key]).forEach((nestedKey) => {
-                            setValue(`${key}.${nestedKey}` as
-                                keyof ShiftData,
-                                data[key][nestedKey]
-                            )
-                        })
-                    } else {
-                        setValue(key as keyof ShiftData, data[key])
-                    }
-                })
-            }
-        });
-    }, []);
+    interface ShiftData {
+        shift_type: string;
+        shift_code: string;
+        shift_title: string;
+        description: string;
+        timein: string;
+        timeout: string;
+        make_default_shift: boolean;
+    }
 
-    const { register, handleSubmit, setValue } = useForm<ShiftData>({
+    const [shiftContent, setShiftContent] = useState<ShiftTypes[]>([]);
+    const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+    const { register, handleSubmit, setValue, reset } = useForm<ShiftData>({
         defaultValues: {
-            organization: 0,
-            shift_type: "",
+            shift_type: "fixed",
             shift_code: "",
             shift_title: "",
             description: "",
@@ -49,16 +48,79 @@ const AdminAttendanceShift = () => {
         },
     });
 
+    // Watch shift_type to handle radio button selection
+
+    // Fetch shifts data on component mount
+    useEffect(() => {
+        getShift()
+            .then((response: any) => {
+                // console.log("shift data::", response.data);
+                const shifts: ShiftTypes[] = Array.isArray(response.data) ? response.data : [response.data];
+                setShiftContent(shifts);
+            })
+            .catch((error) => {
+                console.error("Error fetching shifts:", error);
+            });
+    }, []);
+
     const onSubmit: SubmitHandler<ShiftData> = async (data) => {
-        console.log("shift data form ::", data);
-        try {
-            const response = await postShift(data);
-            console.log("response :", response);
-            // if(response.status:  === "200" | "201"){
-            //     toast.success("New Shift added/updated")
-        } catch (error) {
-            console.error("Error occured while add/update Shift :", error);
+        // console.log("shift data form ::", data);
+        
+        if (editingIndex !== null) {
+            // Update existing shift
+            try {
+                const currentShift = shiftContent.find((shift) => shift.id === editingIndex);
+                if (currentShift) {
+                    const response: any = await updateShift(data);
+                // console.log("response from update:", response);
+                setShiftContent((prev) =>
+                    prev.map((item) => (item.id === response.data.id ? response.data : item))
+                );
+                }
+            } catch (error) {
+                console.error("Error updating shift:", error);
+            }
+        } else {
+            // Create new shift
+            try {
+                const response: any = await postShift(data);
+                // console.log("response from add shift:", response);
+                setShiftContent((prev) => [...prev, response.data]);
+            } catch (error) {
+                console.error("Error creating shift:", error);
+            }
         }
+        
+        reset();
+        setEditingIndex(null);
+    };
+
+    // Edit Shift
+    const editShift = (shiftId: number) => {
+        // console.log("selected shift:", shiftKey);
+
+        const currentShift = shiftContent.find((shift) => shift.id === shiftId);
+        // console.log("edit current shift data::", currentShift);
+
+        if (currentShift) {
+            setValue("shift_type", currentShift.shift_type);
+            setValue("shift_code", currentShift.shift_code);
+            setValue("shift_title", currentShift.shift_title);
+            setValue("description", currentShift.description);
+            setValue("timein", currentShift.timein);
+            setValue("timeout", currentShift.timeout);
+            setValue("make_default_shift", currentShift.make_default_shift);
+
+            setEditingIndex(shiftId);
+        } else {
+            console.error("Shift not found:", shiftId);
+        }
+    };
+
+    // Reset All
+    const resetAll = () => {
+        reset();
+        setEditingIndex(null);
     };
 
     return (
@@ -90,7 +152,7 @@ const AdminAttendanceShift = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                             <div>
                                 <label className="block mb-1 text-sm">Description</label>
                                 <input
@@ -98,10 +160,6 @@ const AdminAttendanceShift = () => {
                                     {...register("description")}
                                     className="w-full p-2 bg-gray-100 rounded"
                                 />
-                            </div>
-                            <div>
-                                <label className="block mb-1 text-sm">Shift type</label>
-                                <input type="text" {...register("shift_type")} className="w-full p-2 bg-gray-100 rounded" />
                             </div>
                             <div>
                                 <label className="block mb-1 text-sm">Timing</label>
@@ -117,17 +175,17 @@ const AdminAttendanceShift = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-start">
+                    <div className="flex flex-col-reverse md:flex-row items-start">
                         <div className="flex space-x-2">
                             <button
-                                // onClick={handleSave}
                                 type="submit"
                                 className="bg-black text-white px-6 py-1 rounded-xl"
                             >
-                                Add/Update
+                                {editingIndex !== null ? "Update" : "Add"}
                             </button>
                             <button
-                                // onClick={resetForm}
+                                type="button"
+                                onClick={resetAll}
                                 className="bg-[#DDFF8F] text-black px-6 py-1 rounded-xl"
                             >
                                 Reset
@@ -139,9 +197,8 @@ const AdminAttendanceShift = () => {
                                 <input
                                     type="radio"
                                     id="fixed"
-                                    name="shiftType"
-                                    // checked={isFixed}
-                                    // onChange={handleFixedChange}
+                                    value="fixed"
+                                    {...register("shift_type")}
                                     className="w-4 h-4 mr-2"
                                 />
                                 <label htmlFor="fixed" className="text-sm">
@@ -152,9 +209,8 @@ const AdminAttendanceShift = () => {
                                 <input
                                     type="radio"
                                     id="flexi"
-                                    name="shiftType"
-                                    // checked={isFlexi}
-                                    // onChange={handleFlexiChange}
+                                    value="flexi"
+                                    {...register("shift_type")}
                                     className="w-4 h-4 mr-2"
                                 />
                                 <label htmlFor="flexi" className="text-sm">
@@ -179,27 +235,49 @@ const AdminAttendanceShift = () => {
                 </div>
             </form>
 
-            <div className="flex justify-end mb-4">
-                <button className="bg-[#DDFF8F] text-black px-6 py-2 rounded-xl font-bold">Next</button>
-            </div>
-
-            <div className="overflow-x-auto bg-[#FBFFF2] rounded p-5">
-                <table className="min-w-full text-sm">
-                    <thead>
-                        <tr className="text-left border-b">
-                            <th className="py-2 px-3">Code</th>
-                            <th className="py-2 px-3">Title</th>
-                            <th className="py-2 px-3">Start Time</th>
-                            <th className="py-2 px-3">End Time</th>
-                            <th className="py-2 px-3">Total Hours</th>
-                            <th className="py-2 px-3">Start of the Day</th>
-                            <th className="py-2 px-3">Allowance</th>
-                            <th className="py-2 px-3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <Table className="bg-[#FBFFF2]">
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Code</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Start Time</TableHead>
+                        <TableHead>End Time</TableHead>
+                        <TableHead>Shift Type</TableHead>
+                        <TableHead>Default</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {shiftContent
+                        .slice()
+                        .reverse()
+                        .map((shift) => (
+                            <TableRow key={shift.id}>
+                                <TableCell>{shift.shift_code}</TableCell>
+                                <TableCell>{shift.shift_title}</TableCell>
+                                <TableCell>{shift.timein}</TableCell>
+                                <TableCell>{shift.timeout}</TableCell>
+                                <TableCell className="capitalize">{shift.shift_type}</TableCell>
+                                <TableCell>{shift.make_default_shift ? "Yes" : "No"}</TableCell>
+                                <TableCell className="text-right">
+                                    <Toggle
+                                        onClick={() => editShift(shift.id)}
+                                        variant="outline"
+                                        aria-label="Edit shift"
+                                    >
+                                        <PenSquare />
+                                    </Toggle>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TableCell colSpan={6}></TableCell>
+                        <TableCell className="text-right"></TableCell>
+                    </TableRow>
+                </TableFooter>
+            </Table>
         </div>
     );
 };

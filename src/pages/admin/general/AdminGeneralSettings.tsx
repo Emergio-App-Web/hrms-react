@@ -3,6 +3,7 @@ import { editGeneral, getGeneral } from "@/services/admin/apiMethods";
 import { ChevronsRight } from "lucide-react";
 import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const AdminGeneralSettings = () => {
     interface SettingsData {
@@ -34,7 +35,7 @@ const AdminGeneralSettings = () => {
     useEffect(() => {
         getGeneral()
             .then((response: any) => {
-                console.log("general get data", response);
+                // console.log("general get data", response);
                 const data = response.data;
                 // Set default values dynamically
                 Object.keys(data).forEach((key) => {
@@ -53,10 +54,11 @@ const AdminGeneralSettings = () => {
     }, [setValue]);
 
     const onSubmit: SubmitHandler<SettingsData> = (data) => {
-        console.log("Submitted Data:", data);
+        // console.log("Submitted Data:", data);
         editGeneral(data)
-            .then((response) => {
-                console.log("response from edit::", response);
+            .then(() => {
+                // console.log("response from edit::", response);
+                toast.success("General Settings Updated Successfully");
             })
             .catch((error) => {
                 console.error(error);

@@ -42,7 +42,7 @@ const Login: React.FC = () => {
                 const loginResponse = (await postLogin(values)) as LoginResponse;
 
                 if (loginResponse.status === 200 && loginResponse.data?.access) {
-                    console.log("login datass", loginResponse);
+                    // console.log("login datass", loginResponse);
                     dispatch(setToken(loginResponse.data.access));
                     dispatch(setUserData(loginResponse.data.role));
                     dispatch(setOrganization(loginResponse.data.organization));

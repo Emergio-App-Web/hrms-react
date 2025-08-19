@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useDispatch } from "react-redux"
 import { logout } from "@/context/reducers/authSlice"
 import { useNavigate } from "react-router-dom"
+import TimeInBtn from "./TimeInBtn"
 
 
 
@@ -30,7 +31,6 @@ interface NavbarProps {
 }
 
 export function Navbar({
-  lastLoginTime = "10:00 AM",
   userAvatar = "https://github.com/shadcn.png",
   userName = "Mr John Doe",
   userRole = "Associate UI/UX Designer",
@@ -49,8 +49,7 @@ export function Navbar({
   return (
     <nav className="bg-black font-montserrat w-full max-w-6xl mx-auto px-2 sm:px-4 py-2 flex flex-wrap items-center justify-between rounded-full mt-2">
       {/* Last Login Time - Hidden on mobile */}
-      <p className="hidden sm:block sm:ml-10 lg:ml-0 text-white font-bold text-sm">Last In: {lastLoginTime}</p>
-
+      <TimeInBtn />
       {/* Main Navigation Items */}
       <div className="flex items-center gap-2 sm:gap-4 ml-auto">
         {/* Theme Dropdown - Shows on all screens */}

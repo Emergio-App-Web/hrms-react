@@ -16,3 +16,51 @@ export const postLogin = (userData:any) => {
     }
   })    
 }
+
+export const postPunchIn = () => {
+  return new Promise((resolve, reject) => {
+    try {
+        apiCall("post", userUrls.punchIn)
+        .then((response) => {
+            resolve(response)
+        })
+        .catch((err) => {
+            reject(err)
+        })
+    } catch(error){
+        resolve({ status: 500, message: "Something went wrong"})
+    }
+  })    
+}
+
+export const getLastPunch = () => {
+  return new Promise((resolve, reject) => {
+    try {
+        apiCall("get", userUrls.lastPunch)
+        .then((response) => {
+            resolve(response)
+        })
+        .catch((err) => {
+            reject(err)
+        })
+    } catch(error){
+        resolve({ status: 500, message: "Something went wrong"})
+    }
+  })    
+}
+
+export const getAttendance = () => {
+  return new Promise((resolve, reject) => {
+    try {
+        apiCall("get", userUrls.attendance)
+        .then((response) => {
+            resolve(response)
+        })
+        .catch((err) => {
+            reject(err)
+        })
+    } catch(error){
+        resolve({ status: 500, message: "Something went wrong"})
+    }
+  })    
+}

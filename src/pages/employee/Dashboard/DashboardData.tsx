@@ -47,9 +47,6 @@ const DashboardData = () => {
   
     return (
      <div>
-
-   
-  
           {/* Center Content */}
           <main className="flex-1 bg-gray-100 p-10 flex flex-col gap-10">
             {/* first 4 div */}

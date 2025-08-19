@@ -6,104 +6,84 @@ import { useSelector } from "react-redux";
 import { RouteObject } from "react-router-dom";
 import { ReactNode } from "react";
 
-// Define types for the Redux state
+// Redux state types
 interface AuthState {
   user: string | null;
   token: string | null;
 }
-
 interface RootState {
   auth: AuthState;
 }
 
-// Props type for ProtectedRoute component
-interface ProtectedRouteProps {
-  allowedRole: string;
-  redirectPath?: string;
-  children?: ReactNode;
-}
-
-// Protected route component that checks both token and role
-const ProtectedRoute = ({ 
-  allowedRole, 
-  // redirectPath = '/login',
-  children 
-}: ProtectedRouteProps) => {
+// Protects routes based on role
+const ProtectedRoute = ({ allowedRole, children }: { allowedRole: "admin" | "employee"; children?: ReactNode }) => {
   const user = useSelector((state: RootState) => state.auth.user);
   const token = useSelector((state: RootState) => state.auth.token);
-  
-  // If no token, always redirect to login
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  // If role doesn't match, redirect to appropriate default page
-  if (allowedRole && user !== allowedRole) {
-    const defaultPath = user === "admin" 
-      ? adminRoutes[0].path  // Admin's default page
-      : employeeRoutes[0].path;  // User's default page
-    return <Navigate to={defaultPath || "/"} replace />;
-  }
-  
+
+  if (!token) return <Navigate to="/login" replace />;
+  if (allowedRole === "admin" && user !== "admin") return <Navigate to={employeeRoutes[0].path || "/"} replace />;
+  if (allowedRole === "employee" && user === "admin") return <Navigate to={adminRoutes[0].path || "/"} replace />;
   return children ? <>{children}</> : <Outlet />;
 };
 
 const App = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const token = useSelector((state: RootState) => state.auth.token);
-  
+
   return (
     <Routes>
       {/* Public route: login */}
       <Route path="/login" element={
-        // Redirect already logged in users to their appropriate pages
         token && user ? (
-          user === "admin" ? 
-            <Navigate to={adminRoutes[0].path || "/"} replace /> : 
-            <Navigate to={employeeRoutes[0].path || "/"} replace />
-        ) : (
-          <Login />
-        )
+          user === "admin"
+            ? <Navigate to={adminRoutes[0].path || "/"} replace />
+            : <Navigate to={employeeRoutes[0].path || "/"} replace />
+        ) : <Login />
       } />
-      
-      {/* User routes - protected by both token and role */}
-      <Route element={<ProtectedRoute allowedRole="user" />}>
-        {employeeRoutes.map((route: RouteObject) => (
-          <Route 
-            key={route.path} 
-            path={route.path} 
-            element={route.element}
-          >
-            {route.children?.map((childRoute: RouteObject) => (
-              <Route 
-                key={childRoute.path} 
-                path={childRoute.path} 
-                element={childRoute.element} 
-              />
-            ))}
-          </Route>
-        ))}
-      </Route>
-      
-      {/* Admin routes - protected by both token and role */}
-      <Route element={<ProtectedRoute allowedRole="admin" />}>
-        {adminRoutes.map((route: RouteObject) => (
-          <Route 
-            key={route.path} 
-            path={route.path} 
-            element={route.element}
-          >
-            {route.children?.map((childRoute: RouteObject) => (
-              <Route 
-                key={childRoute.path} 
-                path={childRoute.path} 
-                element={childRoute.element} 
-              />
-            ))}
-          </Route>
-        ))}
-      </Route>
-      
+
+      {/* Admin routes - only for admin */}
+      {user === "admin" && (
+        <Route element={<ProtectedRoute allowedRole="admin" />}>
+          {adminRoutes.map((route: RouteObject) => (
+            <Route
+              key={route.path || "admin-root"}
+              path={route.path}
+              element={route.element}
+            >
+              {route.children?.map((childRoute: RouteObject, idx: number) => (
+                <Route
+                  key={(route.path || "admin-root") + "-" + (childRoute.path || (childRoute.index ? "index" : "")) + "-" + idx}
+                  path={childRoute.path}
+                  index={childRoute.index}
+                  element={childRoute.element}
+                />
+              ))}
+            </Route>
+          ))}
+        </Route>
+      )}
+
+      {/* Employee routes - only for employee */}
+      {user && user !== "admin" && (
+        <Route element={<ProtectedRoute allowedRole="employee" />}>
+          {employeeRoutes.map((route: RouteObject) => (
+            <Route
+              key={route.path || "employee-root"}
+              path={route.path}
+              element={route.element}
+            >
+              {route.children?.map((childRoute: RouteObject, idx: number) => (
+                <Route
+                  key={(route.path || "employee-root") + "-" + (childRoute.path || "index") + "-" + idx}
+                  path={childRoute.path}
+                  element={childRoute.element}
+                />
+              ))}
+            </Route>
+          ))}
+        </Route>
+      )}
+
       {/* Fallback route */}
       <Route path="*" element={
         !token ? <Navigate to="/login" replace /> :

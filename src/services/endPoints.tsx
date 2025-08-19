@@ -1,6 +1,8 @@
 export const userUrls = {
     login: "user/login",
-    
+    punchIn: "attendance/attendance/punch",
+    lastPunch: "attendance/last-punch",
+    attendance: "attendance/all"
 }
 
 export const adminUrls = {
@@ -18,16 +20,20 @@ export const employeeSettings = {
     empDocSettings : "employee_settings/document-settings",
 }
 
+export const employeeBasics = {
+    employeeBasic : "employee_basic/employee",
+}
+
 export const attendance = {
     manageShift : "attendance_settings/manage_shift",
     attendanceSettings: "attendance_settings/attendance_settings",
     rosterShift : "attendance_settings/roster_shift_settings",
     shiftChange : "attendance_settings/shift_change_settings",
     sandwichRules : "attendance_settings/sandwich_rules_settings",
-    regularization : "attendance_settings/regularization_policies", //regularize + restrict
+    regularization : "attendance_settings/general_policy", 
     timeManage : "attendance_settings/time_management_policy",
     calculation : "attendance_settings/calculation_settings",
-
+    restriction: "attendance_settings/attendance_restriction_policy",
     weeklyOff :  "attendance_settings/weekly_off",
     allowedIps : "attendance_settings/allowed_ips",
     compensationRules : "attendance_settings/compensation_rules",

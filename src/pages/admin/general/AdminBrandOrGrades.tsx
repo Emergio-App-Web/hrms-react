@@ -53,7 +53,7 @@ export default function AdminBrandOrGrades() {
     useEffect(() => {
         getBand()
             .then((response: any) => {
-                console.log("Band data::", response.data);
+                // console.log("Band data::", response.data);
                 const Bands: BandTypes[] = response.data;
                 setBandContent(Bands);
             })
@@ -64,10 +64,10 @@ export default function AdminBrandOrGrades() {
 
     const onSubmit: SubmitHandler<BandData> = (data) => {
         if (editingIndex !== null) {
-            console.log("final submit ", data, editingIndex);
+            // console.log("final submit ", data, editingIndex);
             editBand(data, editingIndex)
                 .then((response: any) => {
-                    console.log("response from edit :", response);
+                    // console.log("response from edit :", response);
                     setBandContent((prev) => prev.map((item) => (item.id === response.data.id ? response.data : item)));
                 })
                 .catch((error) => {
@@ -76,7 +76,7 @@ export default function AdminBrandOrGrades() {
         } else {
             addBand(data)
                 .then((response: any) => {
-                    console.log("response from add Band:", response);
+                    // console.log("response from add Band:", response);
                     setBandContent((prev) => [...prev, response.data]);
                 })
                 .catch((error) => {
@@ -89,15 +89,15 @@ export default function AdminBrandOrGrades() {
 
     //Edit Band
     const editDept = (desigKey: number) => {
-        console.log("selected dept :", desigKey);
+        // console.log("selected dept :", desigKey);
 
         const currentBand = BandContent.find((dept) => dept.id === desigKey);
-        console.log("edit current dept data::", currentBand);
+        // console.log("edit current dept data::", currentBand);
 
         if (currentBand) {
             setValue("title", currentBand.title);
             setValue("rank", currentBand?.rank);
-            console.log("kkkkkkkk:::", currentBand?.updated_by?.id);
+            // console.log("kkkkkkkk:::", currentBand?.updated_by?.id);
 
             setEditingIndex(desigKey);
         } else {
@@ -109,7 +109,7 @@ export default function AdminBrandOrGrades() {
     const removeDept = async (desigKey: number) => {
         try {
             const response: any = await removeBand(desigKey);
-            console.log("response from delete", response);
+            // console.log("response from delete", response);
             if (response.status === 200) {
                 setBandContent((prev) => prev.filter((dept) => dept.id !== desigKey));
             }

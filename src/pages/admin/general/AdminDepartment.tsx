@@ -48,7 +48,7 @@ export default function AdminDepartment() {
     useEffect(() => {
         getUser()
             .then((response: any) => {
-                console.log("user data ::", response.data);
+                // console.log("user data ::", response.data);
                 setUsers(response.data); // Set user data to state
             })
             .catch((error) => {
@@ -67,7 +67,7 @@ export default function AdminDepartment() {
     useEffect(() => {
         getDepartment()
             .then((response: any) => {
-                console.log("department data::", response.data);
+                // console.log("department data::", response.data);
                 const departments: DepartmentTypes[] = response.data;
                 setDepartmentContent(departments);
             })
@@ -78,10 +78,10 @@ export default function AdminDepartment() {
 
     const onSubmit: SubmitHandler<DepartmentData> = (data) => {
         if (editingIndex !== null) {
-            console.log("final submit ", data, editingIndex);
+            // console.log("final submit ", data, editingIndex);
             editDepartment(data, editingIndex)
                 .then((response: any) => {
-                    console.log("response from edit :", response);
+                    // console.log("response from edit :", response);
                     setDepartmentContent((prev) =>
                         prev.map((item) => (item.id === response.data.id ? response.data : item))
                     );
@@ -92,7 +92,7 @@ export default function AdminDepartment() {
         } else {
             addDepartment(data)
                 .then((response: any) => {
-                    console.log("response from add department:", response);
+                    // console.log("response from add department:", response);
                     setDepartmentContent((prev) => [...prev, response.data]);
                 })
                 .catch((error) => {
@@ -105,16 +105,16 @@ export default function AdminDepartment() {
 
     //Edit Department
     const editDept = (deptKey: number) => {
-        console.log("selected dept :", deptKey);
+        // console.log("selected dept :", deptKey);
 
         const currentDept = departmentContent.find((dept) => dept.id === deptKey);
-        console.log("edit current dept data::", currentDept);
+        // console.log("edit current dept data::", currentDept);
 
         if (currentDept) {
             setValue("title", currentDept.title);
             setValue("description", currentDept.description);
             setValue("department_head", currentDept?.updated_by?.id);
-            console.log("kkkkkkkk:::", currentDept?.updated_by?.id);
+            // console.log("kkkkkkkk:::", currentDept?.updated_by?.id);
 
             setEditingIndex(deptKey);
         } else {
@@ -126,7 +126,7 @@ export default function AdminDepartment() {
     const removeDept = async (deptKey: number) => {
         try {
             const response: any = await removeDepartment(deptKey);
-            console.log("response from delete", response);
+            // console.log("response from delete", response);
             if (response.status === 200) {
                 setDepartmentContent((prev) => prev.filter((dept) => dept.id !== deptKey));
             }

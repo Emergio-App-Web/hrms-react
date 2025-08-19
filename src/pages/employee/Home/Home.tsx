@@ -1,39 +1,24 @@
-import { Outlet } from "react-router-dom"
-import RightBar from "@/components/app-rightsidebar"
-import HomeFooter from "@/components/app-bottomnavbar"
-import SideBar from "@/components/app-sidebar"
-import { Navbar } from "@/components/navbar"
+// import { Outlet } from "react-router-dom";
+// import HomeFooter from "../../layouts/Layout/HomeFooter";
+// import { HomeHeader } from "../../layouts/Layout/HomeHeader";
 
 
+// const Home = () => {
+//   return (
+//     <div className=" p-5 md:p-10 flex flex-col min-h-screen gap-5">
+//       <div>
+//         <HomeHeader />
+//       </div>
 
+//       <div className="mt-20" >
+//         <Outlet/>
+//       </div>
 
-export const Home = () => {
-  return (
-  <div className="flex">
-    <SideBar />
-    <div className="">
-    <Navbar />
+//       <div className="pb-5">
+//         <HomeFooter />
+//       </div>
+//     </div>
+//   );
+// };
 
-
-    <div className="grid grid-cols-1 xl:grid-cols-[1fr,auto] gap-4">
-      <div className="flex flex-col gap-4">
-        {/* Profile Content */}
-        <div className="bg-white rounded-xl mt-16">
-          <Outlet />
-        </div>
-
-        {/* Bottom Navigation */}
-        {/* <HomeFooter /> */}
-      </div>
-
-      {/* Right Sidebar */}
-      <aside className="bg-white rounded-xl mt-16 mr-2">
-        <RightBar />
-      </aside>
-        {/* <ProfileBottomNav /> */}
-        <HomeFooter />
-    </div>
-    </div>
-    </div>
-  );
-};
+// // export default Home;

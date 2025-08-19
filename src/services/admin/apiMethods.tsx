@@ -1,5 +1,5 @@
 import { apiCall } from "./apiCalls";
-import { adminUrls, attendance, employeeSettings } from "../endPoints";
+import { adminUrls, attendance, employeeBasics, employeeSettings } from "../endPoints";
 
 // ADMIN GENERAL API
 
@@ -460,7 +460,7 @@ export const getDocSettings = () => {
 export const postDocSettings = (userData: any) => {
     return new Promise((resolve, reject) => {
         try {
-            apiCall("post", employeeSettings.empProfileSettings, userData)
+            apiCall("post", employeeSettings.empDocSettings, userData)
                 .then((response) => {
                     resolve(response);
                 })
@@ -476,7 +476,7 @@ export const postDocSettings = (userData: any) => {
 export const updateDocSettings = (userData: any, id: number) => {
     return new Promise((resolve, reject) => {
         try {
-            const url = `${ employeeSettings.empProfileSettings}?id=${id}`;
+            const url = `${ employeeSettings.empDocSettings}?id=${id}`;
             apiCall("put", url, userData)
                 .then((response) => {
                     resolve(response);
@@ -575,10 +575,10 @@ export const postShift = (userData: any) => {
     });
 };
 
-export const updateShift = (userData: any, id: number) => {
+export const updateShift = (userData: any) => {
     return new Promise((resolve, reject) => {
         try {
-            const url = `${attendance.manageShift}?id=${id}`;
+            const url = `${attendance.manageShift}`;
             apiCall("put", url, userData)
                 .then((response) => {
                     resolve(response);
@@ -835,6 +835,169 @@ export const updateTimePolicy = (regularizationData: any, id: number) => {
         try {
             const url = `${attendance.timeManage}?id=${id}`;
             apiCall("put", url, regularizationData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+};
+
+export const getCalculation = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("get", attendance.calculation, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+};
+
+export const postCalculation = (calculationData: any) => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("post", attendance.calculation, calculationData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+}
+
+export const updateCalculation = (calculationData: any, id: number) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const url = `${attendance.calculation}?id=${id}`;
+            apiCall("put", url, calculationData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+}
+
+export const getWeeklyOff = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("get", attendance.weeklyOff, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+}
+
+export const postWeeklyOff = (weeklyOffData: any) => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("post", attendance.weeklyOff, weeklyOffData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+}
+
+export const updateWeeklyOff = (weeklyOffData: any, weekday: string) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const url = `${attendance.weeklyOff}/${weekday}`;
+            apiCall("put", url, weeklyOffData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+}
+
+export const getRestrictions = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("get", attendance.restriction, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+}
+
+export const postRestrictions = (restrictionData: any) => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("put", attendance.restriction, restrictionData)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+}
+
+// Employee Basics API
+export const getEmployeeBasics = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("get", employeeBasics.employeeBasic, null)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        } catch (error) {
+            resolve({ status: 500, message: "Something went wrong" });
+        }
+    });
+};
+
+export const postEmployeeBasics = (userData: any) => {
+    return new Promise((resolve, reject) => {
+        try {
+            apiCall("post", employeeBasics.employeeBasic, userData)
                 .then((response) => {
                     resolve(response);
                 })

@@ -3,9 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 // Define the navigation items for each main route
 const navigationMap: Record<string, string[]> = {
-  '/general': ['General', 'Billing Info', 'Department', 'Designation', 'Bands/Grades', 'Business Unit'],
+  '/settings': ['General', 'Billing Info', 'Department', 'Designation', 'Bands/Grades', 'Business Unit', 'Employee'],
   '/employee': ['Employee', 'Unique Field', 'Skills', 'Configure Employee Search', 'Configure Employee Strength', 'Add New Document Category'],
-  '/attendance': ['Shift', 'Configure Attendance', 'Roster Shift', 'Sandwich Policies', 'Regularization Policies', 'Restrict Attendance', 'Over Time', 'Calculations']
+  '/attendance': ['Attendance Request', 'Shift Card', 'Attendance', 'Shift', 'Configure Attendance', 'Roster Shift', 'Sandwich Policies', 'Regularization Policies', 'Restrict Attendance', 'Over Time', 'Calculations', 'Weekly Off'],
 };
 
 // Path transformations for navigation
@@ -22,6 +22,9 @@ const pathMap: Record<string, string> = {
   'Configure Employee Search': 'configure-employee-search',
   'Configure Employee Strength': 'configure-employee-strength',
   'Add New Document Category': 'add-new-document-category',
+  'Attendance Request': 'attendance-request',
+  'Shift Card': 'shift-card',
+  'Attendance': 'attendance',
   'Shift': 'shift',
   'Configure Attendance': 'configure-attendance',
   'Roster Shift': 'roster-shift',
@@ -29,7 +32,8 @@ const pathMap: Record<string, string> = {
   'Regularization Policies': 'regularization-policies',
   'Restrict Attendance': 'restrict-attendance',
   'Over Time': 'over-time',
-  'Calculations': 'calculations'
+  'Calculations': 'calculations',
+  'Weekly Off': 'weekly-off',
 };
 
 interface AdminFooterNavProps {

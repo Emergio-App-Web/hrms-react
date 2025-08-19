@@ -56,7 +56,7 @@ export default function AdminDesignation() {
     useEffect(() => {
         getDesignation()
             .then((response: any) => {
-                console.log("Designation data::", response.data);
+                // console.log("Designation data::", response.data);
                 const Designations: DesignationTypes[] = response.data;
                 setDesignationContent(Designations);
             })
@@ -67,10 +67,10 @@ export default function AdminDesignation() {
 
     const onSubmit: SubmitHandler<DesignationData> = (data) => {
         if (editingIndex !== null) {
-            console.log("final submit ", data, editingIndex);
+            // console.log("final submit ", data, editingIndex);
             editDesignation(data, editingIndex)
                 .then((response: any) => {
-                    console.log("response from edit :", response);
+                    // console.log("response from edit :", response);
                     setDesignationContent((prev) =>
                         prev.map((item) => (item.id === response.data.id ? response.data : item))
                     );
@@ -81,7 +81,7 @@ export default function AdminDesignation() {
         } else {
             addDesignation(data)
                 .then((response: any) => {
-                    console.log("response from add Designation:", response);
+                    // console.log("response from add Designation:", response);
                     setDesignationContent((prev) => [...prev, response.data]);
                 })
                 .catch((error) => {
@@ -94,16 +94,16 @@ export default function AdminDesignation() {
 
     //Edit Designation
     const editDept = (desigKey: number) => {
-        console.log("selected dept :", desigKey);
+        // console.log("selected dept :", desigKey);
 
         const currentDept = DesignationContent.find((dept) => dept.id === desigKey);
-        console.log("edit current dept data::", currentDept);
+        // console.log("edit current dept data::", currentDept);
 
         if (currentDept) {
             setValue("title", currentDept.title);
             setValue("description", currentDept.description);
             setValue("rank", currentDept?.rank);
-            console.log("kkkkkkkk:::", currentDept?.updated_by?.id);
+            // console.log("kkkkkkkk:::", currentDept?.updated_by?.id);
 
             setEditingIndex(desigKey);
         } else {
@@ -115,7 +115,7 @@ export default function AdminDesignation() {
     const removeDept = async (desigKey: number) => {
         try {
             const response: any = await removeDesignation(desigKey);
-            console.log("response from delete", response);
+            // console.log("response from delete", response);
             if (response.status === 200) {
                 setDesignationContent((prev) => prev.filter((dept) => dept.id !== desigKey));
             }
@@ -133,7 +133,7 @@ export default function AdminDesignation() {
     return (
         <>
             <div className=" flex items-center gap-3 ml-11">
-                <h1 className="font-montserrat font-semibold text-2xl ">Department</h1>
+                <h1 className="font-montserrat font-semibold text-2xl ">Designation</h1>
                 <p className="font-montserrat font-semibold text-md flex items-center">
                     <ChevronsRight />
                     <div>View/Update global settings for your company</div>

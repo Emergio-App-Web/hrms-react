@@ -50,7 +50,7 @@ export default function AdminBusinessUnit() {
     useEffect(() => {
         getUser()
             .then((response: any) => {
-                console.log("user data ::", response.data);
+                // console.log("user data ::", response.data);
                 setUsers(response.data); // Set user data to state
             })
             .catch((error) => {
@@ -69,7 +69,7 @@ export default function AdminBusinessUnit() {
     useEffect(() => {
       getBusinessUnit()
             .then((response: any) => {
-                console.log("businessunit data::", response.data);
+                // console.log("businessunit data::", response.data);
                 const businessunits: BusinessUnitTypes[] = response.data;
                 setBusinessUnitContent(businessunits);
             })
@@ -80,10 +80,10 @@ export default function AdminBusinessUnit() {
 
     const onSubmit: SubmitHandler<BusinessUnitData> = (data) => {
         if (editingIndex !== null) {
-            console.log("final submit ", data, editingIndex);
+            // console.log("final submit ", data, editingIndex);
             editBusinessUnit(data, editingIndex)
                 .then((response: any) => {
-                    console.log("response from edit :", response);
+                    // console.log("response from edit :", response);
                     setBusinessUnitContent((prev) =>
                         prev.map((item) => (item.id === response.data.id ? response.data : item))
                     );
@@ -95,7 +95,7 @@ export default function AdminBusinessUnit() {
         } else {
           addBusinessUnit(data)
                 .then((response: any) => {
-                    console.log("response from add businessunit:", response);
+                    // console.log("response from add businessunit:", response);
                     setBusinessUnitContent((prev) => [...prev, response.data]);
                     toast.success("Business Unit Added Successfully")
 
@@ -110,16 +110,16 @@ export default function AdminBusinessUnit() {
 
     //Edit BusinessUnit
     const editDept = (deptKey: number) => {
-        console.log("selected dept :", deptKey);
+        // console.log("selected dept :", deptKey);
 
         const currentDept = businessunitContent.find((dept) => dept.id === deptKey);
-        console.log("edit current dept data::", currentDept);
+        // console.log("edit current dept data::", currentDept);
 
         if (currentDept) {
             setValue("title", currentDept.title);
             setValue("description", currentDept.description);
             setValue("businessunit_head", currentDept?.updated_by?.id);
-            console.log("kkkkkkkk:::", currentDept?.updated_by?.id);
+            // console.log("kkkkkkkk:::", currentDept?.updated_by?.id);
 
             setEditingIndex(deptKey);
         } else {
@@ -131,7 +131,7 @@ export default function AdminBusinessUnit() {
     const removeDept = async (deptKey: number) => {
         try {
             const response: any = await removeBusinessUnit(deptKey);
-            console.log("response from delete", response);
+            // console.log("response from delete", response);
             if (response.status === 200) {
                 setBusinessUnitContent((prev) => prev.filter((dept) => dept.id !== deptKey));
                 toast.success("Business Unit deleted Successfully")

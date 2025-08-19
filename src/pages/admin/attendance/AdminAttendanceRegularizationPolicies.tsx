@@ -14,13 +14,13 @@ const AdminAttendanceRegularizationPolicies = () => {
         enable_multiple_punches: boolean;
         restrict_punch_request_days: number;
         punch_approval_status: string;
-        restrict_duty_punch_employee: number;
-        restrict_real_time_justify_employee: number;
-        restrict_punch_request_manager: number;
-        restrict_attendance_approval_manager: number;
-        restrict_late_justify_manager: number;
-        restrict_early_exit_justify_manager: number;
-        restrict_total_time_justify_manager: number;
+        // restrict_duty_punch_employee: number;
+        // restrict_real_time_justify_employee: number;
+        // restrict_punch_request_manager: number;
+        // restrict_attendance_approval_manager: number;
+        // restrict_late_justify_manager: number;
+        // restrict_early_exit_justify_manager: number;
+        // restrict_total_time_justify_manager: number;
     }
 
     useEffect(() => {
@@ -56,13 +56,13 @@ const AdminAttendanceRegularizationPolicies = () => {
             enable_multiple_punches: false,
             restrict_punch_request_days: 0,
             punch_approval_status: "",
-            restrict_duty_punch_employee: 0,
-            restrict_real_time_justify_employee: 0,
-            restrict_punch_request_manager: 0,
-            restrict_attendance_approval_manager: 0,
-            restrict_late_justify_manager: 0,
-            restrict_early_exit_justify_manager: 0,
-            restrict_total_time_justify_manager: 0,
+            // restrict_duty_punch_employee: 0,
+            // restrict_real_time_justify_employee: 0,
+            // restrict_punch_request_manager: 0,
+            // restrict_attendance_approval_manager: 0,
+            // restrict_late_justify_manager: 0,
+            // restrict_early_exit_justify_manager: 0,
+            // restrict_total_time_justify_manager: 0,
         },
     });
 
@@ -116,9 +116,9 @@ const AdminAttendanceRegularizationPolicies = () => {
                     </div>
 
                     <div className="flex items-start mb-6">
-                        <div className="mr-3 mt-1">
+                        {/* <div className="mr-3 mt-1">
                             <input type="checkbox" className="h-5 w-5 rounded border-gray-300" />
-                        </div>
+                        </div> */}
                         <div className="flex-1">
                             <div className="flex items-center">
                                 <label htmlFor="restrict-justification-request" className="font-medium block mb-1">
@@ -178,9 +178,9 @@ const AdminAttendanceRegularizationPolicies = () => {
                     </div>
 
                     <div className="flex items-start mb-6">
-                        <div className="mr-3 mt-1">
+                        {/* <div className="mr-3 mt-1">
                             <input type="checkbox" className="h-5 w-5 rounded border-gray-300" />
-                        </div>
+                        </div> */}
                         <div className="flex-1">
                             <div className="flex items-center">
                                 <label htmlFor="restrict-punch-request" className="font-medium block mb-1">
@@ -201,18 +201,18 @@ const AdminAttendanceRegularizationPolicies = () => {
                         </div>
                     </div>
                     <div className="flex items-start mb-6">
-                        <div className="mr-3 mt-1">
+                        {/* <div className="mr-3 mt-1">
                             <input type="checkbox" className="h-5 w-5 rounded border-gray-300" />
-                        </div>
+                        </div> */}
                         <div className="flex-1">
                             <div className="flex items-center">
                                 <label htmlFor="restrict-punch-request" className="font-medium block mb-1">
-                                    Punch Approval Status
+                                    Enable request punch approval by manager and the status on approval should be
                                 </label>
                                 <input
                                     type="text"
                                     {...register("punch_approval_status")}
-                                    className="w-16 p-1 mx-2 bg-gray-100 rounded"
+                                    className="w-20 p-1 mx-2 bg-gray-100 rounded"
                                     placeholder=""
                                 />
                                 {/* <span>days</span> */}
@@ -224,7 +224,7 @@ const AdminAttendanceRegularizationPolicies = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-start mb-6">
+                    {/* <div className="flex items-start mb-6">
                         <div className="mr-3 mt-1">
                             <input type="checkbox" className="h-5 w-5 rounded border-gray-300" />
                         </div>
@@ -384,7 +384,7 @@ const AdminAttendanceRegularizationPolicies = () => {
                                 adipiscing. Id eget aliquet commodo volutpat semean pharetra urna ultrices.
                             </p>
                         </div>
-                    </div>
+                    </div> */}
 
                         <div className=" mb-4">
                             <button type="submit" className="bg-gray-100 text-black px-6 py-2 rounded-xl font-bold">

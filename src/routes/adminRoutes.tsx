@@ -1,4 +1,4 @@
-import { RouteObject } from "react-router-dom";
+import { RouteObject, Navigate } from "react-router-dom";
 import { AdminLayout } from "@/layouts/admin/AdminLayout";
 import AdminBillingInfo from "@/pages/admin/general/AdminBillingInfo";
 import AdminBrandOrGrades from "@/pages/admin/general/AdminBrandOrGrades";
@@ -23,26 +23,40 @@ import AdminAttendanceRegularizationPolicies from "@/pages/admin/attendance/Admi
 import AdminAttendanceRestrictAttendance from "@/pages/admin/attendance/AdminAttendanceRestrictAttendance";
 import AdminAttendanceOverTime from "@/pages/admin/attendance/AdminAttendanceOverTime";
 import AdminAttendanceCalculations from "@/pages/admin/attendance/AdminAttendanceCalculations";
+import AdminAttendanceWeeklyOff from "@/pages/admin/attendance/AdminAttendanceWeeklyOff";
+import AdminAddEmployee from "@/pages/admin/general/AdminAddEmployee";
+import AdminAttendanceRequest from "@/pages/admin/attendance/AdminAttendanceRequest";
+import AdminShiftCard from "@/pages/admin/attendance/AdminShiftCard";
+import AdminAttendace from "@/pages/admin/attendance/AdminAttendace";
+
 
 export const adminRoutes: RouteObject[] = [
     {
-        path: "/general",
+        path: "/",
         element: <AdminLayout />,
         children: [
-            { path: "", element: <AdminDashboard /> },
+            { index: true, element: <AdminDashboard /> },
+        ],
+    },
+    {
+        path: "/settings",
+        element: <AdminLayout />,
+        children: [
+            { index: true, element: <Navigate to="general" replace /> },
             { path: "general", element: <AdminGeneralSettings /> },
             { path: "billinginfo", element: <AdminBillingInfo /> },
             { path: "department", element: <AdminDepartment /> },
             { path: "designation", element: <AdminDesignation /> },
             { path: "bands/grades", element: <AdminBrandOrGrades /> },
             { path: "businessunit", element: <AdminBusinessUnit /> },
+            { path: "employee", element: <AdminAddEmployee /> },
         ],
     },
     {
         path: "/employee",
-        element: <AdminLayout />,   
-        children:[
-            { path: "", element: <AdminDashboard /> },
+        element: <AdminLayout />,
+        children: [
+            { index: true, element: <Navigate to="employee" replace /> },
             { path: "employee", element: <AdminEmployee /> },
             { path: "unique-field", element: <AdminEmployeeUniqueFiels /> },
             { path: "skills", element: <AdminEmployeeSkills /> },
@@ -56,7 +70,10 @@ export const adminRoutes: RouteObject[] = [
         path: "/attendance",
         element: <AdminLayout />,
         children: [
-            { path: "", element: <AdminDashboard /> },
+            { index: true, element: <Navigate to="attendance-request" replace /> },
+            { path: "attendance-request", element: <AdminAttendanceRequest /> },
+            { path: "shift-card", element: <AdminShiftCard /> },
+            { path: "attendance", element: <AdminAttendace /> },
             { path: "shift", element: <AdminAttendanceShift /> },
             { path: "configure-attendance", element: <AdminAttendanceConfigureAttendance /> },
             { path: "roster-shift", element: <AdminAttendanceRosterShift /> },
@@ -65,6 +82,7 @@ export const adminRoutes: RouteObject[] = [
             { path: "restrict-attendance", element: <AdminAttendanceRestrictAttendance /> },
             { path: "over-time", element: <AdminAttendanceOverTime /> },
             { path: "calculations", element: <AdminAttendanceCalculations /> },
+            { path: "weekly-off", element: <AdminAttendanceWeeklyOff /> },
         ]
     },
     // {
