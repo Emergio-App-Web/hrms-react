@@ -3,8 +3,7 @@ import dayjs, { Dayjs } from "dayjs";
 import ProgressBar from "./ProgressBar";
 import CalendarView from "./CalendarView";
 import { getAttendance } from "../../../services/user/apiMethods";
-
-const STANDARD_HOURS = 9;
+import AttendanceSummary from "./AttendanceSummary";
 
 type AttendancePunch = {
   id: number;
@@ -20,6 +19,7 @@ type AttendanceDay = {
   day_name: string;
   punches: AttendancePunch[];
   total_time: string | null;
+  percentage: number;
   status: string;
   is_justified: boolean;
 };
@@ -36,16 +36,18 @@ type Props = {
   employeeId?: number;
 };
 
-const EmployeeAttendance: React.FC<Props> = ({ apiUrl, employeeId }) => {
+const EmployeeAttendance: React.FC<Props> = ({ employeeId }) => {
   const [view, setView] = useState<"week" | "month">("week");
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [attendanceData, setAttendanceData] = useState<AttendanceDay[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState<number>(dayjs().month() + 1); // dayjs months are 0-based
+  const [currentYear, setCurrentYear] = useState<number>(dayjs().year());
 
-  // Calculate week range
+  // Calculate week range (Monday to Sunday)
   const getWeekRange = (date: Dayjs) => {
     const start = date.startOf("week").add(1, "day"); // Monday
-    const end = start.add(5, "day"); // Saturday
+    const end = start.add(6, "day"); // Sunday
     return { start, end };
   };
 
@@ -53,55 +55,18 @@ const EmployeeAttendance: React.FC<Props> = ({ apiUrl, employeeId }) => {
   const fetchAttendance = async () => {
     setLoading(true);
     try {
-      const response: any = await getAttendance();
-      console.log("API Response:", response); // Debug log
-      
+      const { start, end } = getWeekRange(currentDate);
+      const startDate = start.format("YYYY-MM-DD");
+      const endDate = end.format("YYYY-MM-DD");
+
+      const response: any = await getAttendance(startDate, endDate);
+
       // Extract attendance data from Axios response
       const attendanceResponse = response.data as AttendanceResponse;
-      
-      // Filter attendances for current week
-      const { start, end } = getWeekRange(currentDate);
-      
-      const weekDates: { day_name: string; date: string }[] = [];
-      for (let i = 0; i < 6; i++) {
-        const dateObj = start.add(i, "day");
-        weekDates.push({
-          day_name: dateObj.format("dddd"),
-          date: dateObj.format("YYYY-MM-DD"),
-        });
-      }
-      
-      console.log("Week dates:", weekDates); // Debug log
-      
-      // Map attendance data by date for accurate lookup
-      const attendanceMap = new Map<string, AttendanceDay>();
-      (attendanceResponse.attendances || []).forEach((d) => {
-        attendanceMap.set(d.date, d);
-        console.log("Mapped attendance for date:", d.date, "total_time:", d.total_time); // Debug log
-      });
-      
-      // Fill missing days with default absent/off
-      const filledWeek: AttendanceDay[] = weekDates.map(({ day_name, date }) => {
-        const found = attendanceMap.get(date);
-        if (found) {
-          console.log("Found data for", date, "total_time:", found.total_time); // Debug log
-          return found;
-        }
-        // Default absent/off object
-        return {
-          date,
-          day_name,
-          punches: [],
-          total_time: null,
-          status: ["Saturday", "Sunday"].includes(day_name) ? "off" : "absent",
-          is_justified: false,
-        };
-      });
-      
-      console.log("Final attendance data:", filledWeek); // Debug log
-      setAttendanceData(filledWeek);
+
+      // Since API now returns preset days in correct order, use them directly
+      setAttendanceData(attendanceResponse.attendances || []);
     } catch (err) {
-      console.error("Error fetching attendance:", err); // Debug log
       setAttendanceData([]);
     }
     setLoading(false);
@@ -111,42 +76,89 @@ const EmployeeAttendance: React.FC<Props> = ({ apiUrl, employeeId }) => {
     if (view === "week") fetchAttendance();
     // eslint-disable-next-line
   }, [currentDate, view]);
+  // Year and month
+  useEffect(() => {
+  setCurrentMonth(currentDate.month() + 1);
+  setCurrentYear(currentDate.year());
+}, [currentDate]);
 
   // Navigation handlers
   const handlePrevWeek = () => setCurrentDate((d) => d.subtract(1, "week"));
   const handleNextWeek = () => setCurrentDate((d) => d.add(1, "week"));
   const handleToday = () => setCurrentDate(dayjs());
 
-  // Helper: Calculate worked hours from total_time string
-  const getWorkedHours = (total_time: string | null) => {
-    if (!total_time) return 0;
-    console.log("Calculating hours for total_time:", total_time); // Debug log
-    const [h, m, s] = total_time.split(":");
-    const hours = parseFloat(h) + parseFloat(m) / 60 + parseFloat(s.split('.')[0]) / 3600;
-    console.log("Calculated hours:", hours); // Debug log
-    return hours;
+  // Helper: Get all punch times for display
+  const getAllPunchTimes = (punches: AttendancePunch[]) => {
+    if (!punches || punches.length === 0) return { inTimes: [], outTimes: [] };
+
+    const inTimes: string[] = [];
+    const outTimes: string[] = [];
+
+    punches.forEach((punch) => {
+      if (punch.in_time) {
+        inTimes.push(punch.in_time);
+      }
+      if (punch.out_time) {
+        outTimes.push(punch.out_time);
+      }
+    });
+
+    return { inTimes, outTimes };
   };
 
-  // Helper: Get punch-in/out times
-  const getPunchTimes = (punches: AttendancePunch[]) => {
-    if (!punches || punches.length === 0) return { in: "--", out: "--" };
-    const validPunches = punches.filter((p) => p.in_time && p.out_time);
-    if (validPunches.length === 0) return { in: "--", out: "--" };
-    return {
-      in: validPunches[0].in_time || "--",
-      out: validPunches[validPunches.length - 1].out_time || "--",
-    };
-  };
-
-  // Helper: Progress bar color logic
+  // Helper: Progress bar color logic based on status
   const getProgressColor = (day: AttendanceDay) => {
-    if (day.punches && day.punches.length > 0) return "bg-green-500";
-    if (["Saturday", "Sunday"].includes(day.day_name)) return "bg-blue-500";
-    return "bg-red-500";
+    const status = day.status.toLowerCase();
+
+    switch (status) {
+      case "present":
+        return "bg-green-500";
+      case "half_day":
+        return "bg-emerald-500";
+      case "absent":
+        return "bg-red-500";
+      case "late":
+        return "bg-teal-400";
+      case "early_left":
+      case "early left":
+        return "bg-gray-400";
+      case "weekend/off day":
+        return "bg-violet-500";
+      case "leave":
+        return "bg-blue-500";
+      case "holiday":
+        return "bg-yellow-500";
+      case "coming day":
+        return "bg-gray-200";
+      default:
+        return "bg-gray-300";
+    }
   };
 
-  // Weekdays for display
-  const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  // Helper: Get progress value based on status
+  const getProgressValue = (day: AttendanceDay) => {
+    const status = day.status.toLowerCase();
+
+    // For statuses that should show 100% regardless of percentage
+    if (["absent", "weekend/off day", "leave", "holiday"].includes(status)) {
+      return 1; // 100%
+    }
+
+    // For coming days, show empty progress
+    if (status === "coming day") {
+      return 0;
+    }
+
+    // For all other statuses, use percentage from API
+    return Math.min(day.percentage / 100, 1);
+  };
+
+  // Helper: Format worked hours from percentage
+  const getWorkedHours = (percentage: number) => {
+    const standardHours = 9;
+    return (percentage * standardHours) / 100;
+  };
+
 
   // Format week range for header
   const weekRange = getWeekRange(currentDate);
@@ -211,41 +223,55 @@ const EmployeeAttendance: React.FC<Props> = ({ apiUrl, employeeId }) => {
               {loading ? (
                 <div className="text-center py-8">Loading...</div>
               ) : (
-                weekDays.map((dayName, idx) => {
-                  const currentWeekDate = weekRange.start.add(idx, "day").format("YYYY-MM-DD");
-                  const dayData = attendanceData.find((d) => d.date === currentWeekDate);
-                  const workedHours = getWorkedHours(dayData?.total_time || null);
-                  const punchTimes = getPunchTimes(dayData?.punches || []);
-                  const progress = Math.min(workedHours / STANDARD_HOURS, 1);
-                  
-                  console.log(`Day ${dayName} (${currentWeekDate}):`, {
-                    dayData: dayData?.total_time,
-                    workedHours,
-                    progress,
-                    hasData: !!dayData
-                  }); // Debug log
+                attendanceData.map((dayData) => {
+                  const punchTimes = getAllPunchTimes(dayData.punches || []);
+                  const progress = getProgressValue(dayData);
+                  const workedHours = getWorkedHours(dayData.percentage);
+
                   return (
                     <div
-                      key={dayName}
-                      className="grid grid-cols-3 items-center py-4 rounded-lg "
+                      key={dayData.date}
+                      className="grid grid-cols-3 items-center py-4 rounded-lg"
                     >
                       {/* Date */}
                       <div>
-                        <span className="font-semibold">{dayName}</span>
+                        <span className="font-semibold">{dayData.day_name}</span>
                         <br />
                         <span className="text-xs text-slate-500">
-                          {dayjs(currentWeekDate).format("MMM D, YYYY")}
+                          {dayjs(dayData.date).format("MMM D, YYYY")}
                         </span>
                       </div>
                       {/* Progress bar + punch times */}
                       <div>
                         <ProgressBar
                           progress={progress}
-                          color={dayData ? getProgressColor(dayData) : "bg-blue-500"}
+                          color={getProgressColor(dayData)}
                         />
                         <div className="flex justify-between text-xs mt-1 text-slate-600">
-                          <span>{punchTimes.in !== "--" ? dayjs(`1970-01-01T${punchTimes.in}`).format("h:mm A") : "--"}</span>
-                          <span>{punchTimes.out !== "--" ? dayjs(`1970-01-01T${punchTimes.out}`).format("h:mm A") : "--"}</span>
+                          {/* All punch in times on the left */}
+                          <div className="flex flex-col items-start">
+                            {punchTimes.inTimes.length > 0 ? (
+                              punchTimes.inTimes.map((inTime, index) => (
+                                <span key={`in-${index}`}>
+                                  {dayjs(`1970-01-01T${inTime}`).format("h:mm A")}
+                                </span>
+                              ))
+                            ) : (
+                              <span>--</span>
+                            )}
+                          </div>
+                          {/* All punch out times on the right */}
+                          <div className="flex flex-col items-end">
+                            {punchTimes.outTimes.length > 0 ? (
+                              punchTimes.outTimes.map((outTime, index) => (
+                                <span key={`out-${index}`}>
+                                  {dayjs(`1970-01-01T${outTime}`).format("h:mm A")}
+                                </span>
+                              ))
+                            ) : (
+                              <span>--</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       {/* Total worked hours */}
@@ -263,6 +289,9 @@ const EmployeeAttendance: React.FC<Props> = ({ apiUrl, employeeId }) => {
       {view === "month" && (
         <CalendarView employeeId={employeeId} />
       )}
+
+      {/* AttendanceSummary */}
+      <AttendanceSummary month={currentMonth} year={currentYear} />
     </div>
   );
 };

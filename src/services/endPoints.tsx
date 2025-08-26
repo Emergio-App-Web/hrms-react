@@ -2,7 +2,12 @@ export const userUrls = {
     login: "user/login",
     punchIn: "attendance/attendance/punch",
     lastPunch: "attendance/last-punch",
-    attendance: "attendance/all"
+    attendance: "attendance/all",
+    attendanceSummary: "attendance/summary",
+    userBasic: "employee_basic/employee/me",
+    personalDetails: "employee_basic/personal_detail",
+    bankDetails: "employee_additional/bank",
+    jobHistory: "employee_additional/jobhistory",
 }
 
 export const adminUrls = {

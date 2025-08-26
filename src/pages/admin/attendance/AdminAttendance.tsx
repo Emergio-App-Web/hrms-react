@@ -1,13 +1,12 @@
 import { CalendarDays } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 
-// Dummy data for table
-const shiftData = [
+const attendanceData = [
   {
     empCode: "FTRD01235",
     employee: "Shaheen",
-    shifts: [9.5, 9.5, 9.5, 9.5, 9.5, "W", "W", 9.5, 9.5, 9.5, 9.5, 9.5, 9.5],
+    attendance: ["A", 9.5, "A", 9.5, "A", "W", "W", 9.5, 9.5, 9.5, 9.5, 9.5, 9.5],
     weekOff: 2,
   },
   // ...repeat as needed for demo
@@ -28,26 +27,37 @@ const days = [
   { date: 13, day: "Fri" },
 ];
 
-const designationList = ["All Designations", "Manager", "Developer", "HR"];
-const departmentList = ["All Department", "IT", "HR", "Finance"];
+const departmentList = ["Select Department", "IT", "HR", "Finance"];
+const designationList = ["Select Designations", "Manager", "Developer", "HR"];
+const employeeList = ["All Employees", "Shaheen", "John", "Priya"];
 
-const AdminShiftCard = () => {
-  const [designation, setDesignation] = useState(designationList[0]);
+const AdminAttendance = () => {
   const [department, setDepartment] = useState(departmentList[0]);
+  const [designation, setDesignation] = useState(designationList[0]);
+  const [employee, setEmployee] = useState(employeeList[0]);
   const [startDate, setStartDate] = useState("2025-07-01");
   const [endDate, setEndDate] = useState("2025-07-14");
 
   return (
     <div className="p-6 bg-white mx-auto">
       <div className="flex items-center mb-8">
-        <h1 className="text-2xl font-bold mr-2">Shift Card</h1>
+        <h1 className="text-2xl font-bold mr-2">Attendance</h1>
         <span className="text-gray-500 flex items-center">
           <span className="mx-2">»</span>
-          <span>View, add and update employee shift details</span>
+          <span>View Employee Attendance</span>
         </span>
       </div>
 
       <div className="flex flex-wrap items-center gap-4 mb-4">
+        <select
+          value={employee}
+          onChange={e => setEmployee(e.target.value)}
+          className="p-2 rounded bg-gray-100 text-sm"
+        >
+          {employeeList.map(emp => (
+            <option key={emp} value={emp}>{emp}</option>
+          ))}
+        </select>
         <select
           value={department}
           onChange={e => setDepartment(e.target.value)}
@@ -92,8 +102,8 @@ const AdminShiftCard = () => {
           <Filter className="mr-2 w-4 h-4" /> Filter
         </button>
         <button className="bg-[#DDFF8F] text-black px-4 py-2 rounded-xl font-bold">Search</button> */}
-        <button className="bg-gray-100 text-black px-4 py-2 rounded-xl font-bold">Working Days</button>
-        <button className="bg-gray-100 text-black px-4 py-2 rounded-xl font-bold">Assign Shift</button>
+        <button className="bg-gray-100 text-black px-4 py-2 rounded-xl font-bold">Manually Adjust</button>
+        <button className="bg-gray-100 text-black px-4 py-2 rounded-xl font-bold">Total Hours</button>
       </div>
 
       <Table className="bg-[#FBFFF2] w-full">
@@ -108,22 +118,35 @@ const AdminShiftCard = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {shiftData.map((row, idx) => (
+          {attendanceData.map((row, idx) => (
             <TableRow key={idx}>
               <TableCell>{row.empCode}</TableCell>
               <TableCell>{row.employee}</TableCell>
-              {row.shifts.map((shift, i) => (
-                <TableCell key={i} className={shift === "W" ? "text-orange-500 font-bold" : ""}>
-                  {shift}
+              {row.attendance.map((att, i) => (
+                <TableCell
+                  key={i}
+                  className={
+                    att === "A"
+                      ? "text-red-500 font-bold"
+                      : att === "W"
+                      ? "text-orange-500 font-bold"
+                      : "text-green-500 font-bold"
+                  }
+                >
+                  {att}
                 </TableCell>
               ))}
               <TableCell className="text-red-500 font-bold">{row.weekOff}</TableCell>
             </TableRow>
           ))}
         </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={days.length + 3}></TableCell>
+          </TableRow>
+        </TableFooter>
       </Table>
     </div>
   );
-};
-
-export default AdminShiftCard;
+}
+export default AdminAttendance;

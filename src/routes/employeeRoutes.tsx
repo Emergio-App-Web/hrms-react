@@ -1,10 +1,10 @@
 import { Navigate, RouteObject } from "react-router-dom";
-import DocumentUploadForm from "@/components/documents-form";
-import BankForm from "@/components/bank-form";
+import DocumentUploadForm from "@/pages/employee/Home/documents-form";
+import BankForm from "@/pages/employee/Home/bank-form";
 import SeparationForm from "@/components/seperation-form";
 import PasswordChangeForm from "@/components/password-form";
 import ReferenceForm from "@/components/reference-form";
-import Profile from "@/components/Profile";
+// import Profile from "@/components/Profile";
 import DigitalBusinessCard from "@/pages/employee/Home/DigitalBusinessCard";
 import PersonalDetails from "@/pages/employee/Home/PersonalDetails";
 import Skills from "@/pages/employee/Home/Skills";
@@ -17,6 +17,7 @@ import Disciplinary from "@/pages/employee/Home/Disciplinary";
 import { EmployeeLayout } from "@/layouts/employee/EmployeeLayout";
 import EmployeeDashboard from "@/pages/employee/Dashboard/Dashboard";
 import EmployeeAttendance from "@/pages/employee/attendance/EmployeeAttendance";
+import Profile from "@/pages/employee/Home/Profile";
 
 export const employeeRoutes: RouteObject[] = [
   {

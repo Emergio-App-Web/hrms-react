@@ -1,36 +1,103 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import {Search} from 'lucide-react'
+import { toast } from "react-toastify";
+import { getJobHistory, postJobHistory } from "@/services/user/apiMethods";
+
+interface JobHistory {
+  employee?: number;
+  employer?: string;
+  job_title?: string;
+  employee_code?: string;
+  joining_date?: string;
+  relieving_date?: string;
+  tenure?: string;
+  last_CTC?: string;
+  reason?: string;
+  document?: string;
+}
+
+interface JobHistoryRecord {
+  employee: number;
+  employer: string;
+  job_title: string;
+  employee_code: string;
+  joining_date: string;
+  relieving_date: string;
+  tenure: string;
+  last_CTC: string;
+  reason: string;
+  document: string;
+}
 
 export default function EmploymentForm() {
-  const [formData, setFormData] = useState({
-    employer: "",
-    jobTitle: "",
-    employeeCode: "",
-    tenureStart: "",
-    tenureEnd: "",
-    lastCtc: "",
-    reasonForLeaving: "",
-    document: null,
-  });
+  const [jobHistoryRecords, setJobHistoryRecords] = useState<JobHistoryRecord[]>([]);
+  const [jobHistory, setJobHistory] = useState<JobHistory>({}); // Added missing state
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log(formData);
+  useEffect(() => {
+    fetchJobHistory();
+  }, []);
+
+  const fetchJobHistory = async () => {
+    try {
+      const response: any = await getJobHistory();
+      if (response.status === 200 && response.data) {
+        setJobHistoryRecords(response.data);
+      }
+    } catch (err: unknown) {
+      console.error("Error fetching job history:", err);
+      toast.error("Failed to fetch job history");
+    }
   };
 
-  const data = [
-    {
-      employer: "Tech Corp",
-      jobTitle: "Software Engineer",
-      employeeCode: "EMP001",
-      tenure: "2 years",
-      lastCtc: "$80,000",
-      reasonForLeaving: "Career Growth",
-    },
-    // Add more records as needed
-  ];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    } else {
+      setSelectedFile(null);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      // Create a FormData object to send multipart/form-data
+      const formData = new FormData();
+
+      // Send single job history object (not array)
+      formData.append("data", JSON.stringify(jobHistory));
+
+      if (selectedFile) {
+        formData.append("document", selectedFile);
+      }
+
+      // Make the API call with the FormData object
+      const response: any = await postJobHistory(formData);
+
+      if (response.status === 200) {
+        toast.success("Job history added successfully");
+        // Reset the form after successful submission
+        setJobHistory({});
+        setSelectedFile(null);
+        // Reset file input
+        const fileInput = document.getElementById('document') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+        // Re-fetch the job history to update the table
+        fetchJobHistory();
+      }
+    } catch (err: unknown) {
+      console.error("Error submitting form:", err);
+      toast.error("Failed to submit form");
+    }
+  };
+
+  const handleReset = () => {
+    setJobHistory({});
+    setSelectedFile(null);
+    const fileInput = document.getElementById('document') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
 
   return (
     <div className="md:p-8 flex flex-col gap-10">
@@ -38,34 +105,17 @@ export default function EmploymentForm() {
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="space-y-6 max-w-3xl mx-auto p-6 bg-[#fdfff2] rounded-lg text-[14px]">
-              {/* Employer */}
               <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
-                <label htmlFor="employer" className="font-medium">
-                  Employer
+                <label htmlFor="employee" className="font-medium">
+                  Employee
                 </label>
                 <input
-                  type="text"
-                  id="employer"
+                  type="number"
+                  id="employee"
                   className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.employer}
+                  value={jobHistory?.employee || ''}
                   onChange={(e) =>
-                    setFormData({ ...formData, employer: e.target.value })
-                  }
-                />
-              </div>
-
-              {/* Job Title */}
-              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
-                <label htmlFor="jobTitle" className="font-medium">
-                  Job Title
-                </label>
-                <input
-                  type="text"
-                  id="jobTitle"
-                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.jobTitle}
-                  onChange={(e) =>
-                    setFormData({ ...formData, jobTitle: e.target.value })
+                    setJobHistory({ ...jobHistory, employee: Number(e.target.value) })
                   }
                 />
               </div>
@@ -79,34 +129,89 @@ export default function EmploymentForm() {
                   type="text"
                   id="employeeCode"
                   className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.employeeCode}
+                  value={jobHistory?.employee_code || ''}
                   onChange={(e) =>
-                    setFormData({ ...formData, employeeCode: e.target.value })
+                    setJobHistory({ ...jobHistory, employee_code: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Employer */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
+                <label htmlFor="employer" className="font-medium">
+                  Employer
+                </label>
+                <input
+                  type="text"
+                  id="employer"
+                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={jobHistory?.employer || ''}
+                  onChange={(e) =>
+                    setJobHistory({ ...jobHistory, employer: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Job Title */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
+                <label htmlFor="jobTitle" className="font-medium">
+                  Job Title
+                </label>
+                <input
+                  type="text"
+                  id="jobTitle"
+                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={jobHistory?.job_title || ''}
+                  onChange={(e) =>
+                    setJobHistory({ ...jobHistory, job_title: e.target.value })
                   }
                 />
               </div>
 
               {/* Tenure */}
-              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] items-center gap-4">
-                <label className="font-medium">Tenure</label>
+              <div className="grid grid-cols-1 md:grid-cols-[700px_1fr] items-center gap-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input
-                    type="date"
-                    className="px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.tenureStart}
-                    onChange={(e) =>
-                      setFormData({ ...formData, tenureStart: e.target.value })
-                    }
-                  />
-                  <input
-                    type="date"
-                    className="px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.tenureEnd}
-                    onChange={(e) =>
-                      setFormData({ ...formData, tenureEnd: e.target.value })
-                    }
-                  />
+                  <div className="flex gap-5 items-center">
+                    <label htmlFor="joining_date" className="font-medium">Joining Date</label>
+                    <input
+                      type="date"
+                      id="joining_date"
+                      className="px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={jobHistory?.joining_date || ''}
+                      onChange={(e) =>
+                        setJobHistory({ ...jobHistory, joining_date: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="flex gap-5 items-center">
+                    <label htmlFor="relieving_date" className="font-medium">Relieving Date</label>
+                    <input
+                      type="date"
+                      id="relieving_date"
+                      className="px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={jobHistory?.relieving_date || ''}
+                      onChange={(e) =>
+                        setJobHistory({ ...jobHistory, relieving_date: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
+              </div>
+
+              {/* Tenure Display */}
+              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
+                <label htmlFor="tenure" className="font-medium">
+                  Tenure
+                </label>
+                <input
+                  type="text"
+                  id="tenure"
+                  className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={jobHistory?.tenure || ''}
+                  onChange={(e) =>
+                    setJobHistory({ ...jobHistory, tenure: e.target.value })
+                  }
+                />
               </div>
 
               {/* Last CTC */}
@@ -118,9 +223,9 @@ export default function EmploymentForm() {
                   type="text"
                   id="lastCtc"
                   className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.lastCtc}
+                  value={jobHistory?.last_CTC || ''}
                   onChange={(e) =>
-                    setFormData({ ...formData, lastCtc: e.target.value })
+                    setJobHistory({ ...jobHistory, last_CTC: e.target.value })
                   }
                 />
               </div>
@@ -134,12 +239,9 @@ export default function EmploymentForm() {
                   id="reasonForLeaving"
                   rows={4}
                   className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.reasonForLeaving}
+                  value={jobHistory?.reason || ''}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      reasonForLeaving: e.target.value,
-                    })
+                    setJobHistory({ ...jobHistory, reason: e.target.value })
                   }
                 />
               </div>
@@ -150,17 +252,19 @@ export default function EmploymentForm() {
                   Upload Document
                 </label>
                 <input
+                  name="document"
                   type="file"
                   id="document"
                   className="w-full px-4 py-2 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  onChange={handleFileChange}
                 />
               </div>
             </div>
-            <div className="flex   justify-center gap-10 items-center my-10 text-[14px]">
-              <button className="bg-black px-5 py-2 text-white rounded-3xl font-semibold">
+            <div className="flex justify-center gap-10 items-center my-10 text-[14px]">
+              <button type="submit" className="bg-black px-5 py-2 text-white rounded-3xl font-semibold">
                 Add Details
               </button>
-              <button className="bg-[#DDFF8F] px-5 py-2 text-black rounded-3xl font-semibold">
+              <button type="button" onClick={handleReset} className="bg-[#DDFF8F] px-5 py-2 text-black rounded-3xl font-semibold">
                 Reset
               </button>
             </div>
@@ -168,15 +272,14 @@ export default function EmploymentForm() {
         </CardContent>
       </Card>
 
-      {/* Table Section header */}
+      {/* Table Section */}
+      <div className="w-full max-w-7xl mx-auto md:p-4">
+        <div className="rounded-b-lg bg-[#FBFFF2] pb-2">
 
-      <div className="w-full max-w-7xl mx-auto md:p-4 ">
-        <div className=" rounded-b-lg bg-[#FBFFF2] pb-2">
-
-          {/* head */}
-          <div className="bg-[#e8ffa8] p-4 rounded-2xl  md:rounded-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
+          {/* Header */}
+          <div className="bg-[#e8ffa8] p-4 rounded-2xl md:rounded-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
             
-            {/* show */}
+            {/* Show entries */}
             <div className="flex items-center gap-2">
               <span className="font-bold">Show</span>
               <select className="px-3 py-1 rounded-xl border border-gray-300 bg-white text-sm sm:text-base">
@@ -185,19 +288,6 @@ export default function EmploymentForm() {
                 <option value="50">50</option>
               </select>
               <span className="font-bold">Entries</span>
-            </div>
-            
-            {/* search */}
-            <div className="flex items-center gap-2">
-              <input
-                type="search"
-                placeholder="Search..."
-                className="px-4 py-2 rounded-xl border border-gray-300 min-w-[150px] sm:min-w-[250px] text-sm sm:text-base"
-              />
-              <button className="px-4 py-2 bg-[#e8ffa8] hidden sm:block rounded hover:bg-[#dff59e] font-bold text-sm sm:text-base">
-                Search
-              </button>
-              <Search className="sm:hidden"/>
             </div>
           </div>
 
@@ -216,7 +306,10 @@ export default function EmploymentForm() {
                     Employee Code
                   </th>
                   <th className="px-6 py-3 text-left text-xs sm:text-sm">
-                    Tenure
+                    Joining Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs sm:text-sm">
+                    Relieving Date
                   </th>
                   <th className="px-6 py-3 text-left text-xs sm:text-sm hidden sm:table-cell">
                     Last CTC
@@ -224,45 +317,48 @@ export default function EmploymentForm() {
                   <th className="px-6 py-3 text-left text-xs sm:text-sm hidden sm:table-cell">
                     Reason For Leaving
                   </th>
-                  <th className="px-6 py-3 text-left text-xs sm:text-sm">
-                    Action
-                  </th>
                 </tr>
               </thead>
               <tbody>
-                {data.map((record, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm sm:text-base">
-                      {record.employer}
-                    </td>
-                    <td className="px-6 py-4 text-sm sm:text-base">
-                      {record.jobTitle}
-                    </td>
-                    <td className="px-6 py-4 text-sm sm:text-base">
-                      {record.employeeCode}
-                    </td>
-                    <td className="px-6 py-4 text-sm sm:text-base">
-                      {record.tenure}
-                    </td>
-                    <td className="px-6 py-4 text-sm sm:text-base hidden sm:table-cell">
-                      {record.lastCtc}
-                    </td>
-                    <td className="px-6 py-4 text-sm sm:text-base hidden sm:table-cell">
-                      {record.reasonForLeaving}
-                    </td>
-                    <td className="px-6 py-4">
-                      <button className="text-blue-600 hover:text-blue-800 text-sm sm:text-base">
-                        Edit
-                      </button>
+                {jobHistoryRecords.length > 0 ? (
+                  jobHistoryRecords.map((record, index) => (
+                    <tr key={index} className="border-b hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm sm:text-base">
+                        {record.employer}
+                      </td>
+                      <td className="px-6 py-4 text-sm sm:text-base">
+                        {record.job_title}
+                      </td>
+                      <td className="px-6 py-4 text-sm sm:text-base">
+                        {record.employee_code}
+                      </td>
+                      <td className="px-6 py-4 text-sm sm:text-base">
+                        {record.joining_date}
+                      </td>
+                      <td className="px-6 py-4 text-sm sm:text-base">
+                        {record.relieving_date}
+                      </td>
+                      <td className="px-6 py-4 text-sm sm:text-base hidden sm:table-cell">
+                        {record.last_CTC}
+                      </td>
+                      <td className="px-6 py-4 text-sm sm:text-base hidden sm:table-cell">
+                        {record.reason}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                      No job history records found
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
 
           {/* Pagination */}
-          <div className="w-full flex justify-end gap-5 mt-4  font-montserrat font-bold text-[10px] sm:text-xs ">
+          <div className="w-full flex justify-end gap-5 mt-4 font-montserrat font-bold text-[10px] sm:text-xs">
             <button className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-700">
               Previous
             </button>

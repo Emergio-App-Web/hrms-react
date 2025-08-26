@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
-import { getAttendance } from "../../../services/user/apiMethods";
+// import { getAttendance } from "../../../services/user/apiMethods";
 import ProgressBar from "./ProgressBar";
 
 type AttendanceDay = {
@@ -15,27 +15,30 @@ type Props = {
   employeeId?: number;
 };
 
-const CalendarView: React.FC<Props> = ({ employeeId }) => {
+const CalendarView: React.FC<Props> = () => {
   const [currentMonth, setCurrentMonth] = useState<Dayjs>(dayjs());
-  const [attendanceData, setAttendanceData] = useState<AttendanceDay[]>([]);
+  const [attendanceData] = useState<AttendanceDay[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-  // Removed unused start and end variables
-    // getAttendance currently takes no arguments, so we fetch all and filter client-side
-    getAttendance()
-      .then((response: any) => {
-        // Filter attendances for current month
-        const filtered = (response.attendances || []).filter((d: any) => {
-          return dayjs(d.date).isSame(currentMonth, "month");
-        });
-        setAttendanceData(filtered);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [currentMonth, employeeId]);
+  // useEffect(() => {
+  //   setLoading(true);
+  // // Removed unused start and end variables
+  //   // getAttendance currently takes no arguments, so we fetch all and filter client-side
+  //   getAttendance({
+  //     start_date: currentMonth.startOf("month").format("YYYY-MM-DD"),
+  //     end_date: currentMonth.endOf("month").format("YYYY-MM-DD"),
+  //   })
+  //     .then((response: any) => {
+  //       // Filter attendances for current month
+  //       const filtered = (response.attendances || []).filter((d: any) => {
+  //         return dayjs(d.date).isSame(currentMonth, "month");
+  //       });
+  //       setAttendanceData(filtered);
+  //       setLoading(false);
+  //     })
+  //     .catch(() => setLoading(false));
+  // }, [currentMonth, employeeId]);
 
   const getDayData = (date: dayjs.Dayjs) =>
     attendanceData.find((d) => dayjs(d.date).isSame(date, "day"));

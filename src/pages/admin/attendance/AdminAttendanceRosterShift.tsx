@@ -32,8 +32,6 @@ const AdminAttendanceRosterShift = () => {
         register: registerRoster,
         handleSubmit: handleSubmitRoster,
         setValue: setValueRoster,
-        reset: resetRoster,
-        formState: { errors: errorsRoster }
     } = useForm<RoasterData>({
         defaultValues: {
             organization: 0,
@@ -50,8 +48,6 @@ const AdminAttendanceRosterShift = () => {
         register: registerShift,
         handleSubmit: handleSubmitShift,
         setValue: setValueShift,
-        reset: resetShift,
-        formState: { errors: errorsShift }
     } = useForm<ShiftChange>({
         defaultValues: {
             organization: 0,

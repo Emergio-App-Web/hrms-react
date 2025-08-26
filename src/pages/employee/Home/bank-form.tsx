@@ -1,42 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { getBankDetails, postBankDetails } from '@/services/user/apiMethods';
+import { toast } from 'react-toastify';
 
-// interface BankDetails {
-//     bankName: string;
-//     accountNumber: string;
-//     ifscCode: string;
-//     branchAddress: string;
-//     accountType: string;
-//     paymentMode: string;
-//     bankDocument: string;
-// }
+interface BankFormDetails {
+    id: number;
+    name_of_bank: string;
+    account_no: string;
+    ifsc: string;
+    branch: string;
+    account_type: string;
+}
 
 export default function BankForm() {
-    const [selectedFile, setSelectedFile] = useState<string>("");
+    // const [selectedFile, setSelectedFile] = useState<string>("");
+    const [bankDetails, setBankDetails] = useState<BankFormDetails>({
+        id: 0,
+        name_of_bank: "",
+        account_no: "",
+        ifsc: "",
+        branch: "",
+        account_type: ""
+    });
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setSelectedFile(file.name);
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = e.target.files?.[0];
+    //     if (file) {
+    //         setSelectedFile(file.name);
+    //     }
+    // };
+    const fetchData = async () => {
+        try {
+            const response: any = await getBankDetails();
+            if (response.status === 200) {
+                setBankDetails(response.data);
+            }
+        } catch (err: unknown) {
+            console.error("Error fetching bank details:", err);
+            toast.error("Failed to fetch bank details");
         }
-    };
+    }
 
     const handleReset = () => {
-        setSelectedFile("");
+        // setSelectedFile("");
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        try {
+            if (!bankDetails.id) {
+                const response: any = await postBankDetails(bankDetails);
+                if (response.status === 200) {
+                    toast.success("Bank details added successfully");
+                } else {
+                    toast.error("Failed to add bank details");
+                }
+            }
+        } catch (err: unknown) {
+            console.error("Error submitting bank details:", err);
+            toast.error("Failed to submit bank details");
+        }
     };
 
     return (
@@ -49,6 +79,8 @@ export default function BankForm() {
                         <div className="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-2 sm:gap-4 items-start sm:items-center">
                             <Label className="text-sm sm:text-base font-medium">Name of Bank</Label>
                             <Input
+                                value={bankDetails.name_of_bank}
+                                onChange={(e) => setBankDetails({ ...bankDetails, name_of_bank: e.target.value })}
                                 type="text"
                                 className="bg-[#f0f0f0] text-sm text-[#1F1F1FB2]"
                             />
@@ -57,6 +89,8 @@ export default function BankForm() {
                         <div className="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-2 sm:gap-4 items-start sm:items-center">
                             <Label className="text-sm sm:text-base font-medium">Account Number</Label>
                             <Input
+                                value={bankDetails.account_no}
+                                onChange={(e) => setBankDetails({ ...bankDetails, account_no: e.target.value })}
                                 type="text"
                                 className="bg-[#f0f0f0] text-sm text-[#1F1F1FB2]"
                             />
@@ -65,6 +99,8 @@ export default function BankForm() {
                         <div className="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-2 sm:gap-4 items-start sm:items-center">
                             <Label className="text-sm sm:text-base font-medium">IFSC Code</Label>
                             <Input
+                                value={bankDetails.ifsc}
+                                onChange={(e) => setBankDetails({ ...bankDetails, ifsc: e.target.value })}
                                 type="text"
                                 className="bg-[#f0f0f0] text-sm text-[#1F1F1FB2]"
                             />
@@ -73,6 +109,8 @@ export default function BankForm() {
                         <div className="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-2 sm:gap-4 items-start sm:items-center">
                             <Label className="text-sm sm:text-base font-medium">Branch Address</Label>
                             <Input
+                                value={bankDetails.branch}
+                                onChange={(e) => setBankDetails({ ...bankDetails, branch: e.target.value })}
                                 type="text"
                                 className="bg-[#f0f0f0] text-sm text-[#1F1F1FB2]"
                             />
@@ -80,19 +118,15 @@ export default function BankForm() {
 
                         <div className="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-2 sm:gap-4 items-start sm:items-center">
                             <Label className="text-sm sm:text-base font-medium">Account type</Label>
-                            <Select>
-                                <SelectTrigger className="bg-[#f0f0f0] text-sm text-[#1F1F1FB2]">
-                                    <SelectValue placeholder="Select Account type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="savings">Savings</SelectItem>
-                                    <SelectItem value="current">Current</SelectItem>
-                                    <SelectItem value="salary">Salary</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <Input
+                                value={bankDetails.account_type}
+                                onChange={(e) => setBankDetails({ ...bankDetails, account_type: e.target.value })}
+                                type="text"
+                                className="bg-[#f0f0f0] text-sm text-[#1F1F1FB2]"
+                            />
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-2 sm:gap-4 items-start sm:items-center">
+                        {/* <div className="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-2 sm:gap-4 items-start sm:items-center">
                             <Label className="text-sm sm:text-base font-medium">Payment Mode</Label>
                             <Select>
                                 <SelectTrigger className="bg-[#f0f0f0] text-sm text-[#1F1F1FB2]">
@@ -104,9 +138,9 @@ export default function BankForm() {
                                     <SelectItem value="imps">IMPS</SelectItem>
                                 </SelectContent>
                             </Select>
-                        </div>
+                        </div> */}
 
-                        <div className="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-2 sm:gap-4 items-start sm:items-center">
+                        {/* <div className="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-2 sm:gap-4 items-start sm:items-center">
                             <Label className="text-sm sm:text-base font-medium">Bank Document</Label>
                             <div className="grid w-full items-center gap-1.5">
                                 <Input
@@ -123,12 +157,13 @@ export default function BankForm() {
                                     {selectedFile || "Choose File & Upload"}
                                 </Label>
                             </div>
-                        </div>
+                        </div> */}
                     </form>
                 </CardContent>
             </Card>
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4 px-4">
                 <Button
+                    onClick={handleSubmit}  
                     type="submit"
                     className="w-full sm:w-auto rounded-full px-8 py-2 bg-black text-white hover:bg-gray-800"
                 >

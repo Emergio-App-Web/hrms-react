@@ -27,7 +27,7 @@ import AdminAttendanceWeeklyOff from "@/pages/admin/attendance/AdminAttendanceWe
 import AdminAddEmployee from "@/pages/admin/general/AdminAddEmployee";
 import AdminAttendanceRequest from "@/pages/admin/attendance/AdminAttendanceRequest";
 import AdminShiftCard from "@/pages/admin/attendance/AdminShiftCard";
-import AdminAttendace from "@/pages/admin/attendance/AdminAttendace";
+import AdminAttendace from "@/pages/admin/attendance/AdminAttendance";
 
 
 export const adminRoutes: RouteObject[] = [

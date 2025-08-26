@@ -16,6 +16,8 @@ import { useDispatch } from "react-redux"
 import { logout } from "@/context/reducers/authSlice"
 import { useNavigate } from "react-router-dom"
 import TimeInBtn from "./TimeInBtn"
+import { getUserBasic } from "@/services/user/apiMethods"
+import { useEffect, useState } from "react"
 
 
 
@@ -30,10 +32,26 @@ interface NavbarProps {
   onClear?: () => void
 }
 
+interface User {
+  id: number;
+  user: {
+    name: string;
+  role: string;
+  };
+  designation: {
+    title: string;
+    description: string;
+  };
+}
+
+interface ApiResponse {
+  status: number;
+  data: User;
+  message?: string;
+}
+
 export function Navbar({
   userAvatar = "https://github.com/shadcn.png",
-  userName = "Mr John Doe",
-  userRole = "Associate UI/UX Designer",
   colors = [],
   onSelect = () => {},
   onClear = () => {},
@@ -41,11 +59,28 @@ export function Navbar({
   
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [userData, setUserData] = useState<User | null>(null);
   const HandleLogout = () => {
        dispatch(logout())
        navigate("/login")
        
   } 
+
+  const fetchUserData = async () => {
+    try {
+      const response = await getUserBasic() as ApiResponse;
+      if (response && response.status === 200) {
+        setUserData(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
   return (
     <nav className="bg-black font-montserrat w-full max-w-6xl mx-auto px-2 sm:px-4 py-2 flex flex-wrap items-center justify-between rounded-full mt-2">
       {/* Last Login Time - Hidden on mobile */}
@@ -104,12 +139,12 @@ export function Navbar({
             <Button className="bg-black text-white hover:bg-black hover:text-white p-1 sm:p-2">
               <div className="flex items-center gap-2">
                 <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
-                  <AvatarImage src={userAvatar} alt={userName} />
-                  <AvatarFallback>{userName[0]}</AvatarFallback>
+                  <AvatarImage src={userAvatar} alt={userData?.user.name} />
+                  <AvatarFallback>{userData?.user.name}</AvatarFallback>
                 </Avatar>
                 <div className="hidden lg:flex flex-col items-start">
-                  <p className="text-sm text-white font-bold">{userName}</p>
-                  <p className="text-xs text-white">{userRole}</p>
+                  <p className="text-sm text-white font-bold">{userData?.user.name}</p>
+                  <p className="text-xs text-white">{userData?.designation.title}</p>
                 </div>
                 <ChevronDown className="hidden sm:block w-4 h-4" />
               </div>
