@@ -12,15 +12,15 @@ import { ToastContainer } from 'react-toastify';
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <Provider store={store}>
-        <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnHover
-        theme="light"
-      />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                pauseOnHover
+                theme="light"
+            />
             <PersistGate persistor={persistor}>
                 <BrowserRouter>
                     <App />

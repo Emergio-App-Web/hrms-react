@@ -1,20 +1,24 @@
 import { RouteObject, Navigate } from "react-router-dom";
 import { AdminLayout } from "@/layouts/admin/AdminLayout";
-import AdminBillingInfo from "@/pages/admin/general/AdminBillingInfo";
-import AdminBrandOrGrades from "@/pages/admin/general/AdminBrandOrGrades";
-// import AdminDashboard from "@/pages/admin/general/AdminDashboard";
+
+// Import all your admin page components...
 import AdminDashboard from "@/pages/admin/general/Dashboard/Dashboard";
+import AdminGeneralSettings from "@/pages/admin/general/AdminGeneralSettings";
+import AdminBillingInfo from "@/pages/admin/general/AdminBillingInfo";
 import AdminDepartment from "@/pages/admin/general/AdminDepartment";
 import AdminDesignation from "@/pages/admin/general/AdminDesignation";
-import AdminGeneralSettings from "@/pages/admin/general/AdminGeneralSettings";
+import AdminBrandOrGrades from "@/pages/admin/general/AdminBrandOrGrades";
 import AdminBusinessUnit from "@/pages/admin/general/AdminBusinessUnit";
+import AdminAddEmployee from "@/pages/admin/general/AdminAddEmployee";
 import AdminEmployee from "@/pages/admin/employee/AdminEmployee";
 import AdminEmployeeUniqueFiels from "@/pages/admin/employee/AdminEmployeeUniqueFiels";
 import AdminEmployeeSkills from "@/pages/admin/employee/AdminEmployeeSkills";
 import AdminEmployeeSearchSettings from "@/pages/admin/employee/AdminEmployeeSearchSettings";
 import AdminEmployeeStrength from "@/pages/admin/employee/AdminEmployeeStrength";
 import AdminEmployeeDocumentCategory from "@/pages/admin/employee/AdminEmployeeDocumentCategory";
-// import LoadingWave from "@/pages/admin/Test";
+import AdminAttendanceRequest from "@/pages/admin/attendance/AdminAttendanceRequest";
+import AdminShiftCard from "@/pages/admin/attendance/AdminShiftCard";
+import AdminAttendace from "@/pages/admin/attendance/AdminAttendance";
 import AdminAttendanceShift from "@/pages/admin/attendance/AdminAttendanceShift";
 import AdminAttendanceConfigureAttendance from "@/pages/admin/attendance/AdminAttendanceConfigureAttendance";
 import AdminAttendanceRosterShift from "@/pages/admin/attendance/AdminAttendanceRosterShift";
@@ -24,37 +28,32 @@ import AdminAttendanceRestrictAttendance from "@/pages/admin/attendance/AdminAtt
 import AdminAttendanceOverTime from "@/pages/admin/attendance/AdminAttendanceOverTime";
 import AdminAttendanceCalculations from "@/pages/admin/attendance/AdminAttendanceCalculations";
 import AdminAttendanceWeeklyOff from "@/pages/admin/attendance/AdminAttendanceWeeklyOff";
-import AdminAddEmployee from "@/pages/admin/general/AdminAddEmployee";
-import AdminAttendanceRequest from "@/pages/admin/attendance/AdminAttendanceRequest";
-import AdminShiftCard from "@/pages/admin/attendance/AdminShiftCard";
-import AdminAttendace from "@/pages/admin/attendance/AdminAttendance";
-
+import { UnderDevelopmentPage } from "@/pages/common/UnderDevelopmentPage";
 
 export const adminRoutes: RouteObject[] = [
-    {
-        path: "/",
-        element: <AdminLayout />,
+  {
+    path: "/",
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <Navigate to="/dashboard" replace /> },
+      { path: "dashboard", element: <AdminDashboard /> },
+      { path: "home", element: <UnderDevelopmentPage /> },
+
+      {
+        path: "settings",
         children: [
-            { index: true, element: <AdminDashboard /> },
+          { index: true, element: <Navigate to="general" replace /> },
+          { path: "general", element: <AdminGeneralSettings /> },
+          { path: "billinginfo", element: <AdminBillingInfo /> },
+          { path: "department", element: <AdminDepartment /> },
+          { path: "designation", element: <AdminDesignation /> },
+          { path: "bands/grades", element: <AdminBrandOrGrades /> },
+          { path: "businessunit", element: <AdminBusinessUnit /> },
+          { path: "employee", element: <AdminAddEmployee /> },
         ],
-    },
-    {
-        path: "/settings",
-        element: <AdminLayout />,
-        children: [
-            { index: true, element: <Navigate to="general" replace /> },
-            { path: "general", element: <AdminGeneralSettings /> },
-            { path: "billinginfo", element: <AdminBillingInfo /> },
-            { path: "department", element: <AdminDepartment /> },
-            { path: "designation", element: <AdminDesignation /> },
-            { path: "bands/grades", element: <AdminBrandOrGrades /> },
-            { path: "businessunit", element: <AdminBusinessUnit /> },
-            { path: "employee", element: <AdminAddEmployee /> },
-        ],
-    },
-    {
-        path: "/employee",
-        element: <AdminLayout />,
+      },
+      {
+        path: "employee",
         children: [
             { index: true, element: <Navigate to="employee" replace /> },
             { path: "employee", element: <AdminEmployee /> },
@@ -64,11 +63,9 @@ export const adminRoutes: RouteObject[] = [
             { path: "configure-employee-strength", element: <AdminEmployeeStrength /> },
             { path: "add-new-document-category", element: <AdminEmployeeDocumentCategory /> },
         ]
-     
-    },
-    {
-        path: "/attendance",
-        element: <AdminLayout />,
+      },
+      {
+        path: "attendance",
         children: [
             { index: true, element: <Navigate to="attendance-request" replace /> },
             { path: "attendance-request", element: <AdminAttendanceRequest /> },
@@ -84,9 +81,47 @@ export const adminRoutes: RouteObject[] = [
             { path: "calculations", element: <AdminAttendanceCalculations /> },
             { path: "weekly-off", element: <AdminAttendanceWeeklyOff /> },
         ]
-    },
-    // {
-    //     path: "/test",
-    //     element: <LoadingWave />
-    // }
+      },
+
+      {
+        path: "leaves",
+        children: [
+          { index: true, element: <Navigate to="apply" replace /> },
+          { path: "apply", element: <UnderDevelopmentPage /> },
+          { path: "balance", element: <UnderDevelopmentPage /> },
+          { path: "history", element: <UnderDevelopmentPage /> }
+        ]
+      },
+
+      {
+        path: "expense",
+        children: [
+          { index: true, element: <Navigate to="submit" replace /> },
+          { path: "submit", element: <UnderDevelopmentPage /> },
+          { path: "history", element: <UnderDevelopmentPage /> },
+          { path: "approvals", element: <UnderDevelopmentPage /> }
+        ]
+      },
+
+      {
+        path: "compensation",
+        children: [
+          { index: true, element: <Navigate to="salary" replace /> },
+          { path: "salary", element: <UnderDevelopmentPage /> },
+          { path: "tax", element: <UnderDevelopmentPage /> },
+          { path: "benefits", element: <UnderDevelopmentPage /> }
+        ]
+      },
+
+      { path: "assets" , element: <UnderDevelopmentPage /> },
+      { path: "timesheet" , element: <UnderDevelopmentPage /> },
+      { path: "achieve" , element: <UnderDevelopmentPage /> },
+      { path: "training" , element: <UnderDevelopmentPage /> },
+      { path: "forms" , element: <UnderDevelopmentPage /> },
+      { path: "policies" , element: <UnderDevelopmentPage /> },
+      { path: "calendar" , element: <UnderDevelopmentPage /> },
+      { path: "org-chart" , element: <UnderDevelopmentPage /> },
+      { path: "timeline" , element: <UnderDevelopmentPage /> },
+    ],
+  },
 ];

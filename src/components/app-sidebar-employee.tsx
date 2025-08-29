@@ -5,7 +5,7 @@ import {
   ChevronsLeft,
   MessagesSquare,
   Home,
-  LogOut,
+  // LogOut,
   Settings,
   Watch,
   Heart,
@@ -161,7 +161,7 @@ export function EmployeeSidebar() {
           <NavItem
             icon={Home}
             title="Home"
-            to="/home/profile"
+            to="home/profile"
             isCollapsed={isCollapsed}
             isActive={location.pathname.startsWith('/home/')}
           />
@@ -171,7 +171,7 @@ export function EmployeeSidebar() {
             title="Attendance"
             to="/attendance/summary"
             isCollapsed={isCollapsed}
-            isActive={location.pathname === '/attendance/summary'}
+            isActive={location.pathname.startsWith('/attendance/')}
           />
 
           <DropdownNavItem
@@ -297,13 +297,13 @@ export function EmployeeSidebar() {
             isActive={location.pathname === '/settings'}
           />
 
-          <NavItem
+          {/* <NavItem
             icon={LogOut}
             title="Logout"
             to="/logout"
             isCollapsed={isCollapsed}
             isActive={location.pathname === '/logout'}
-          />
+          /> */}
         </nav>
       </aside>
     </>
@@ -366,7 +366,7 @@ function DropdownNavItem({
   const isActive = items.some(item => item.to === location.pathname);
 
   return (
-    <div className="relative ml-4 ">
+    <div className="relative">
       <Button
         variant="nav"
         className={cn(

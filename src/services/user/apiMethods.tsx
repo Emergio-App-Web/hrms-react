@@ -228,3 +228,139 @@ export const postJobHistory = (data: any) => {
     }
   });
 };
+
+// Education
+
+export const getEducation = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      apiCall("get", userUrls.education)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: 500, message: "Something went wrong" });
+    }
+  });
+}
+
+export const postEducation = (data: any) => {
+  return new Promise((resolve, reject) => {
+    try {
+      apiCall("post", userUrls.education, data)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: 500, message: "Something went wrong" });
+    }
+  });
+};
+
+// Family 
+
+export const getFamilyDetails = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      apiCall("get", userUrls.family)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: 500, message: "Something went wrong" });
+    }
+  });
+};
+
+export const postFamilyDetails = (data: any) => {
+  return new Promise((resolve, reject) => {
+    try {
+      apiCall("post", userUrls.family, data)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: 500, message: "Something went wrong" });
+    }
+  });
+};
+
+// Emergency
+
+export const getEmergencyDetails = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      apiCall("get", userUrls.emergency)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: 500, message: "Something went wrong" });
+    }
+  });
+};
+
+export const postEmergencyDetails = (data: any) => {
+  return new Promise((resolve, reject) => {
+    try {
+      apiCall("post", userUrls.emergency, data)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: 500, message: "Something went wrong" });
+    }
+  });
+};
+
+// References
+
+export const getReferences = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      apiCall("get", userUrls.references)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: 500, message: "Something went wrong" });
+    }
+  });
+};
+
+export const postReferences = (data: any) => {
+  return new Promise((resolve, reject) => {
+    try {
+      apiCall("post", userUrls.references, data)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: 500, message: "Something went wrong" });
+    }
+  });
+};

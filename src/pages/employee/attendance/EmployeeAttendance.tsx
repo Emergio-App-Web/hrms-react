@@ -4,6 +4,7 @@ import ProgressBar from "./ProgressBar";
 import CalendarView from "./CalendarView";
 import { getAttendance } from "../../../services/user/apiMethods";
 import AttendanceSummary from "./AttendanceSummary";
+import { Link } from "react-router-dom";
 
 type AttendancePunch = {
   id: number;
@@ -173,7 +174,7 @@ const EmployeeAttendance: React.FC<Props> = ({ employeeId }) => {
           <span>View Attendance</span>
         </span>
       </div>
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+      <div className="flex flex-col-reverse gap-4 sm:flex-row justify-between items-center mb-4">
         <div className="flex gap-2">
           <button className="px-3 py-1 border rounded-full text-sm" onClick={handleToday}>
             Today
@@ -190,6 +191,11 @@ const EmployeeAttendance: React.FC<Props> = ({ employeeId }) => {
           >
             Month
           </button>
+        </div>
+        <div>
+          <Link to="/attendance/request-attendance" className="p-3 border font-medium rounded-full text-sm bg-[#ddff8f]">
+            Attendance Request
+          </Link>
         </div>
       </div>
       {view === "week" && (

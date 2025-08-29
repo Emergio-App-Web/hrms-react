@@ -5,7 +5,7 @@ import {
   ChevronsLeft,
   MessagesSquare,
   Home,
-  LogOut,
+  // LogOut,
   Settings,
   Watch,
   Heart,
@@ -315,13 +315,13 @@ export function Sidebar() {
             )
           }
 
-          <NavItem
+          {/* <NavItem
             icon={LogOut}
             title="Logout"
             to="/logout"
             isCollapsed={isCollapsed}
             isActive={location.pathname === '/logout'}
-          />
+          /> */}
         </nav>
       </aside>
     </>
@@ -386,7 +386,7 @@ function DropdownNavItem({
   const isActive = items.some(item => item.to === location.pathname);
 
   return (
-    <div className="relative ml-4 ">
+    <div className="relative">
       <Button
         variant="nav"
         className={cn(

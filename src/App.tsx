@@ -1,195 +1,54 @@
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { employeeRoutes } from "./routes/employeeRoutes";
-import Login from "./pages/Login/Login";
-import { adminRoutes } from "./routes/adminRoutes";
+import { Navigate, useRoutes } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RouteObject } from "react-router-dom";
-import { ReactNode } from "react";
 
-// Redux state types
-interface AuthState {
-  user: string | null;
-  token: string | null;
-}
+import { employeeRoutes } from "./routes/employeeRoutes";
+import { adminRoutes } from "./routes/adminRoutes";
+import Login from "./pages/Login/Login";
+
+// Define a type for the Redux state
 interface RootState {
-  auth: AuthState;
+  auth: {
+    user: "admin" | "employee" | null;
+    token: string | null;
+  };
 }
-
-// Protects routes based on role
-const ProtectedRoute = ({ allowedRole, children }: { allowedRole: "admin" | "employee"; children?: ReactNode }) => {
-  const user = useSelector((state: RootState) => state.auth.user);
-  const token = useSelector((state: RootState) => state.auth.token);
-
-  if (!token) return <Navigate to="/login" replace />;
-  if (allowedRole === "admin" && user !== "admin") return <Navigate to={employeeRoutes[0].path || "/"} replace />;
-  if (allowedRole === "employee" && user === "admin") return <Navigate to={adminRoutes[0].path || "/"} replace />;
-  return children ? <>{children}</> : <Outlet />;
-};
 
 const App = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
-  const token = useSelector((state: RootState) => state.auth.token);
+  const { user, token } = useSelector((state: RootState) => state.auth);
 
-  return (
-    <Routes>
-      {/* Public route: login */}
-      <Route path="/login" element={
-        token && user ? (
-          user === "admin"
-            ? <Navigate to={adminRoutes[0].path || "/"} replace />
-            : <Navigate to={employeeRoutes[0].path || "/"} replace />
-        ) : <Login />
-      } />
+  // 1. Define routes for different application states.
+  // These are arrays of RouteObject, which useRoutes understands.
+  const commonRoutes = [{ path: "/login", element: <Login /> }];
+  
+  const authenticatedAdminRoutes = [
+    ...adminRoutes,
+    // Add a fallback for any unknown URL for logged-in admins
+    { path: "*", element: <Navigate to="/dashboard" replace /> }, // Ensure you have a default admin path
+  ];
+  
+  const authenticatedEmployeeRoutes = [
+    ...employeeRoutes,
+    // Add a fallback for any unknown URL for logged-in employees
+    { path: "*", element: <Navigate to="/dashboard" replace /> },
+  ];
+  
+  const unauthenticatedRoutes = [
+    ...commonRoutes,
+    // For any other path, redirect to login if not authenticated
+    { path: "*", element: <Navigate to="/login" replace /> },
+  ];
 
-      {/* Admin routes - only for admin */}
-      {user === "admin" && (
-        <Route element={<ProtectedRoute allowedRole="admin" />}>
-          {adminRoutes.map((route: RouteObject) => (
-            <Route
-              key={route.path || "admin-root"}
-              path={route.path}
-              element={route.element}
-            >
-              {route.children?.map((childRoute: RouteObject, idx: number) => (
-                <Route
-                  key={(route.path || "admin-root") + "-" + (childRoute.path || (childRoute.index ? "index" : "")) + "-" + idx}
-                  path={childRoute.path}
-                  index={childRoute.index}
-                  element={childRoute.element}
-                />
-              ))}
-            </Route>
-          ))}
-        </Route>
-      )}
-
-      {/* Employee routes - only for employee */}
-      {user && user !== "admin" && (
-        <Route element={<ProtectedRoute allowedRole="employee" />}>
-          {employeeRoutes.map((route: RouteObject) => (
-            <Route
-              key={route.path || "employee-root"}
-              path={route.path}
-              element={route.element}
-            >
-              {route.children?.map((childRoute: RouteObject, idx: number) => (
-                <Route
-                  key={(route.path || "employee-root") + "-" + (childRoute.path || "index") + "-" + idx}
-                  path={childRoute.path}
-                  element={childRoute.element}
-                />
-              ))}
-            </Route>
-          ))}
-        </Route>
-      )}
-
-      {/* Fallback route */}
-      <Route path="*" element={
-        !token ? <Navigate to="/login" replace /> :
-        user === "admin" ? <Navigate to={adminRoutes[0].path || "/"} replace /> :
-        <Navigate to={employeeRoutes[0].path || "/"} replace />
-      } />
-    </Routes>
+  // 2. The useRoutes hook selects and renders the correct routes based on logic.
+  // This replaces the entire <Routes> component and manual mapping.
+  const element = useRoutes(
+    token
+      ? user === "admin"
+        ? authenticatedAdminRoutes
+        : authenticatedEmployeeRoutes
+      : unauthenticatedRoutes
   );
+
+  return <>{element}</>;
 };
 
 export default App;
-
-
-
-
-
-// // with simple protect
-
-// import { Routes, Route, RouteObject, Navigate } from "react-router-dom";
-// import { employeeRoutes } from "./routes/employeeRoutes";
-// import Login from "./pages/Login/Login";
-// import { adminRoutes } from "./routes/adminRoutes";
-// import { useSelector } from "react-redux";
-
-
-
-// const App = () => {
-//     const user = useSelector((state: { auth: { user: string | null } }) => state.auth.user);
-//     const token = useSelector((state: {auth: {token: string | null }}) => state.auth.token)
-//       console.log("user data from redux ::", user, token);
-
-    
-//         const renderRoutes = (userRoutes: RouteObject[]) => {
-            
-//             return userRoutes.map((route) => (
-//                 <Route key={route.path} path={route.path} element={route.element}>
-//                     {route.children?.map((childRoute) => (
-//                         <Route key={childRoute.path} path={childRoute.path} element={childRoute.element} />
-//                     ))}
-//                 </Route>
-//             ));
-//         };
-    
-//         return ( 
-//            <Routes>
-                 
-//           {/* Public route: login */}
-//            {!user && <Route path="/login" element={<Login />} />} 
-        
-          
-     
-//            {!user && <Route path="*" element={<Navigate to="/login" replace />} />} 
-    
-//           {/* Authenticated user routes */}
-//            {user && user === "user" && renderRoutes(employeeRoutes)} 
-//           {/* renderRoutes(employeeRoutes) */}
-    
-//           {/* Admin routes */}
-//            {user && user === "admin" && renderRoutes(adminRoutes)} 
-         
-    
-//           {/* Fallback */}
-//            {user && <Route path="*" element={<Navigate to="/" />} />} 
-      
-//            </Routes>
-//            );
-//         }
-//         export default App
-
-
-
-
-
-
-
-
-//without protect
-// import { Routes, Route, RouteObject } from "react-router-dom";
-// import { employeeRoutes } from "./routes/employeeRoutes";
-// import Login from "./pages/Login/Login";
-// import { adminRoutes } from "./routes/adminRoutes";
-// // import { useSelector } from "react-redux";
-
-
-// const App = () => {
-//     const renderRoutes = (userRoutes: RouteObject[]) => {
-//         return userRoutes.map((route) => (
-//             <Route key={route.path} path={route.path} element={route.element}>
-//                 {route.children?.map((childRoute) => (
-//                     <Route key={childRoute.path} path={childRoute.path} element={childRoute.element} />
-//                 ))}
-//             </Route>
-//         ));
-//     };
-
-//     return ( 
-//        <Routes>
-//           {/* Public route: login */}
-//           <Route path="/login" element={<Login />} />
-          
-//           {/* Admin routes */}
-//           {renderRoutes(adminRoutes)}
-
-//           {renderRoutes(employeeRoutes)}
-//        </Routes>
-//     );
-// };
-
-// export default App;

@@ -42,6 +42,7 @@ interface User {
     title: string;
     description: string;
   };
+  profile: string;
 }
 
 interface ApiResponse {
@@ -51,7 +52,7 @@ interface ApiResponse {
 }
 
 export function Navbar({
-  userAvatar = "https://github.com/shadcn.png",
+  // userAvatar = "https://github.com/shadcn.png",
   colors = [],
   onSelect = () => {},
   onClear = () => {},
@@ -139,12 +140,12 @@ export function Navbar({
             <Button className="bg-black text-white hover:bg-black hover:text-white p-1 sm:p-2">
               <div className="flex items-center gap-2">
                 <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
-                  <AvatarImage src={userAvatar} alt={userData?.user.name} />
+                  <AvatarImage src={userData?.profile} alt={userData?.user.name.slice(0, 2)} />
                   <AvatarFallback>{userData?.user.name}</AvatarFallback>
                 </Avatar>
                 <div className="hidden lg:flex flex-col items-start">
                   <p className="text-sm text-white font-bold">{userData?.user.name}</p>
-                  <p className="text-xs text-white">{userData?.designation.title}</p>
+                  <p className="text-xs text-white">{userData?.designation.title || "Admin"}</p>
                 </div>
                 <ChevronDown className="hidden sm:block w-4 h-4" />
               </div>

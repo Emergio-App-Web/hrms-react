@@ -199,7 +199,7 @@ export default function EmploymentForm() {
               </div>
 
               {/* Tenure Display */}
-              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
+              {/* <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">
                 <label htmlFor="tenure" className="font-medium">
                   Tenure
                 </label>
@@ -212,7 +212,7 @@ export default function EmploymentForm() {
                     setJobHistory({ ...jobHistory, tenure: e.target.value })
                   }
                 />
-              </div>
+              </div> */}
 
               {/* Last CTC */}
               <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 items-center">

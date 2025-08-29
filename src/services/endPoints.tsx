@@ -8,6 +8,10 @@ export const userUrls = {
     personalDetails: "employee_basic/personal_detail",
     bankDetails: "employee_additional/bank",
     jobHistory: "employee_additional/jobhistory",
+    education: "employee_additional/education",
+    family: "employee_additional/family",
+    emergency: "employee_additional/emergency",
+    references: "employee_additional/references",
 }
 
 export const adminUrls = {
